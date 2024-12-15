@@ -18,8 +18,6 @@ const analyzeHandler = async (req, res) => {
 
     
     try {
-      // 基礎分析使用 GPT-3.5
-      const gpt35 = createOpenAIInstance(apiKey, 'gpt-3.5');
       // 中等複雜度分析使用標準 GPT-4
       const gpt4 = createOpenAIInstance(apiKey, 'gpt-4');
       // 最終分析使用 GPT-4 Turbo
@@ -31,7 +29,7 @@ const analyzeHandler = async (req, res) => {
 
       // 路徑和方法分析（必需）
       if (apiData.path && apiData.method) {
-        const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, gpt35);
+        const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, gpt4);
         analysisPromises.push(
           pathMethodChain.invoke({ data: apiData })
             .then(result => {
@@ -42,7 +40,7 @@ const analyzeHandler = async (req, res) => {
 
       // 參數分析（可選）
       if (Array.isArray(apiData.parameters) && apiData.parameters.length > 0) {
-        const parametersChain = createAnalysisChain(parametersAnalysisTemplate, gpt35);
+        const parametersChain = createAnalysisChain(parametersAnalysisTemplate, gpt4);
         analysisPromises.push(
           parametersChain.invoke({ data: apiData })
             .then(result => {
