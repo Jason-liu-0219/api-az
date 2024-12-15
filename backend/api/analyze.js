@@ -24,13 +24,19 @@ const formatAnalysisResult = (result) => {
 };
 
 export default async function handler(req, res) {
-  // 設置 CORS 頭
+  // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production'
-    ? 'https://api-az-frontend.vercel.app'
-    : 'http://localhost:5173');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    process.env.NODE_ENV === 'production'
+      ? 'https://api-az-frontend.vercel.app'
+      : 'http://localhost:5173'
+  );
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
   // 處理 OPTIONS 請求
   if (req.method === 'OPTIONS') {
