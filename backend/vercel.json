@@ -16,6 +16,5 @@
         "Access-Control-Allow-Headers": "Content-Type"
       }
     }
-  ],
-  "regions": ["hkg1"]
+  ]
 }
