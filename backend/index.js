@@ -19,7 +19,8 @@ app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://api-az-frontend.vercel.app'] 
     : ['http://localhost:5173'],
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'X-API-KEY'],
   credentials: true
 }));
 app.use(express.json());
@@ -84,6 +85,9 @@ const createAnalysisChain = (prompt) => {
 app.post("/analyze", async (req, res) => {
   try {
     const apiKey = req.headers["x-api-key"];
+    console.log('Received headers:', req.headers); // 添加日誌
+    console.log('API Key:', apiKey); // 添加日誌
+
     if (!apiKey) {
       return res.status(401).json({ error: "API key is required" });
     }
