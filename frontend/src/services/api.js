@@ -5,10 +5,12 @@ export const analyzeEndpoint = async (apiData, apiKey) => {
     const response = await fetch(`${API_BASE_URL}/analyze`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': apiKey
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(apiData)
+      body: JSON.stringify({
+        ...apiData,
+        apiKey
+      })
     });
 
     if (!response.ok) {
@@ -16,10 +18,10 @@ export const analyzeEndpoint = async (apiData, apiKey) => {
     }
 
     const data = await response.json();
-    console.log('API response:', data); // 添加日誌
+    console.log('API response:', data);
     return data;
   } catch (error) {
-    console.error('API call failed:', error);
+    console.error('Error calling API:', error);
     throw error;
   }
 };

@@ -84,9 +84,8 @@ const createAnalysisChain = (prompt) => {
 
 app.post("/analyze", async (req, res) => {
   try {
-    const apiKey = req.headers["x-api-key"];
-    console.log('Received headers:', req.headers); // 添加日誌
-    console.log('API Key:', apiKey); // 添加日誌
+    const { apiKey, ...apiData } = req.body;
+    console.log('Received request body:', { ...apiData, apiKey: '***' }); // 安全地記錄請求
 
     if (!apiKey) {
       return res.status(401).json({ error: "API key is required" });
@@ -114,7 +113,7 @@ app.post("/analyze", async (req, res) => {
       parameters,
       requestBody,
       responses,
-    } = req.body;
+    } = apiData;
 
     // 創建分析任務數組，只包含存在的字段
     const analysisPromises = [];
