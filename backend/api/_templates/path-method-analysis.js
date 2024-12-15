@@ -10,18 +10,14 @@ Desc: {description}
 
 Evaluation Criteria:
 1. RESTful Path Rules
-- Use nouns for resources, including:
-  * State nouns: status, health, state, condition
-  * Action results: report, log, audit, summary
-  * Resource states: draft, published, archived
-  * Metadata: config, setting, preference
+- Use nouns, not verbs
 - Use plurals for collections
-- Use hyphens for separators
-- Avoid action verbs that modify resources:
-  * Creation: create, add, insert
-  * Modification: update, modify, change
-  * Deletion: delete, remove, clear
-- Clear resource hierarchy
+- Use lowercase letters
+- Use hyphens (-) to separate words
+- Keep hierarchy with /
+- Resource path: /collection/{id}/sub-collection
+- Use query params for filtering
+- Version prefix if needed: /v1
 
 2. RESTful Method Rules
 - GET: Read only, no state change
