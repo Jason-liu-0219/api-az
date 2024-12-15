@@ -1,20 +1,21 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
 export const requestBodyAnalysisTemplate = new PromptTemplate({
-  template: `系統角色：{systemRole}
+  template: `
+  分析此 API 請求體設計，請嚴格按照以下格式回答：
+規則：
+1. 請只分析請求體的數據結構設計是否合理，以及必要字段是否完整
+2. 若符合規範，請直接回答「符合規範」，不需要詳細說明
+3. 若有問題，才需要列出具體問題點
 
-分析以下 API 端點的請求體：
-路徑：{path}
-方法：{method}
 請求體：{requestBody}
 描述：{description}
 
-請提供以下分析：
-1. 請求體的結構是否清晰合理？
-2. 必要欄位和可選欄位的設計是否恰當？
-3. 數據類型和格式是否適當？
-4. 有什麼可以改進的建議嗎？
+• 問題：
+[若有問題才列出，否則回答「符合規範」]
 
-請用中文回答，並保持專業、簡潔的語氣。`,
-  inputVariables: ["systemRole", "method", "path", "requestBody", "description"]
+• 建議：
+[若有問題才提供建議，否則不需回答]
+`,
+  inputVariables: ["requestBody", "description"]
 });

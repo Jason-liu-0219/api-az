@@ -1,22 +1,22 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
 export const methodAnalysisTemplate = new PromptTemplate({
-  template: `系統角色：{systemRole}
+  template: `
+  分析此 API 的 HTTP 方法使用，請嚴格按照以下格式回答：
+規則：
+1. 請只要分析這個 HTTP 方法的使用是不是符合 description 與 RESTful 原則就好，不需要分析其他細節(path、query、body等)
+2. 若符合規範，請直接回答「符合規範」，不需要詳細說明
+3. 若有問題，才需要列出具體問題點
 
-方法指南：
-{methodGuidelines}
-
-分析以下 API 端點的 HTTP 方法：
 方法：{method}
 路徑：{path}
 描述：{description}
 
-請提供以下分析：
-1. 此方法是否符合 RESTful API 最佳實踐？為什麼？
-2. 此方法是否適合該端點的用途？為什麼？
-3. 此方法的安全性和冪等性如何？
-4. 有什麼可以改進的建議嗎？
+• 問題：
+[若有問題才列出，否則回答「符合規範」]
 
-請用中文回答，並保持專業、簡潔的語氣。`,
-  inputVariables: ["systemRole", "methodGuidelines", "method", "path", "description"]
+• 建議：
+[若有問題才提供建議，否則不需回答]
+`,
+  inputVariables: ["method", "path", "description"]
 });

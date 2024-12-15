@@ -1,19 +1,24 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
 export const finalAnalysisTemplate = new PromptTemplate({
-  template: `系統角色：{systemRole}
+  template: `
+角色:
+{systemRole}
 
-基於之前的分析，為以下 API 端點提供總結：
-路徑：{path}
-方法：{method}
-描述：{description}
+API 整體評估，請嚴格按照以下格式回答：
+規則：
+1. 請根據之前的分析結果，總結出主要問題
+2. 若完全符合規範，請直接回答「API 設計符合規範」，不需要詳細說明
+3. 若有問題，才需要列出具體問題點和建議
 
-請提供以下總結：
-1. 整體設計評價
-2. 主要優點
-3. 需要改進的地方
-4. 具體改進建議
+分析結果：
+{analysisContent}
 
-請用中文回答，並保持專業、簡潔的語氣。`,
-  inputVariables: ["systemRole", "method", "path", "description"]
+• 主要問題：
+[若有問題才列出，否則回答「API 設計符合規範」]
+
+• 改進建議：
+[若有問題才提供建議，否則不需回答]
+`,
+  inputVariables: ["analysisContent","systemRole"],
 });

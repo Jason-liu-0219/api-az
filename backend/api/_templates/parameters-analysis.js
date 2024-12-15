@@ -1,20 +1,20 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
 export const parametersAnalysisTemplate = new PromptTemplate({
-  template: `系統角色：{systemRole}
+  template: `
+  分析此 API 參數設計，請嚴格按照以下格式回答：
+規則：
+1. 請只分析參數的命名規範、類型設計是否合理
+2. 若符合規範，請直接回答「符合規範」，不需要詳細說明
+3. 若有問題，才需要列出具體問題點
 
-分析以下 API 端點的參數：
-路徑：{path}
-方法：{method}
 參數：{parameters}
 描述：{description}
 
-請提供以下分析：
-1. 參數的命名是否清晰且符合慣例？
-2. 必要參數和可選參數的設計是否合理？
-3. 參數的類型和格式是否適當？
-4. 有什麼可以改進的建議嗎？
+• 問題：
+[若有問題才列出，否則回答「符合規範」]
 
-請用中文回答，並保持專業、簡潔的語氣。`,
-  inputVariables: ["systemRole", "method", "path", "parameters", "description"]
+• 建議：
+[若有問題才提供建議，否則不需回答]`,
+  inputVariables: ["parameters", "description"]
 });

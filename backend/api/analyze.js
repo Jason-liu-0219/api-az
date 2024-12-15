@@ -128,10 +128,6 @@ const analyzeHandler = async (req, res) => {
         try {
           finalAnalysis = await finalAnalysisChain.invoke({
             data: {
-              method,
-              path,
-              description,
-              summary,
               analysisContent,
             }
           });
