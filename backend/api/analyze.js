@@ -51,38 +51,29 @@ const analyzeHandler = async (req, res) => {
         });
       }
 
-      if (parameters) {
+      if (parameters && Array.isArray(parameters) && parameters.length > 0) {
         analysisPromises.parameters = parametersChain.invoke({
           data: {
             parameters,
-            method,
-            path,
             description,
-            summary,
           },
         });
       }
 
-      if (responses) {
-        analysisPromises.responses = responseChain.invoke({
-          data: {
-            responses,
-            method,
-            path,
-            description,
-            summary,
-          },
-        });
-      }
-
-      if (requestBody) {
+      if (requestBody && Object.keys(requestBody).length > 0) {
         analysisPromises.requestBody = requestBodyChain.invoke({
           data: {
             requestBody,
-            method,
-            path,
             description,
-            summary,
+          },
+        });
+      }
+
+      if (responses && Object.keys(responses).length > 0) {
+        analysisPromises.responses = responseChain.invoke({
+          data: {
+            responses,
+            description,
           },
         });
       }
