@@ -5,9 +5,11 @@ import { apiPrompts } from "../_prompts/api.js";
 export const createOpenAIInstance = (apiKey) =>
   new OpenAI({
     openAIApiKey: apiKey,
-    modelName: "gpt-4-1106-preview",  // 使用更快的模型
-    temperature: 0.5,                  // 降低創造性，提高確定性
-    maxTokens: 1000,                   // 減少 token 限制
+    modelName: "gpt-4-1106-preview",  // 使用更準確的模型
+    temperature: 0.2,                  // 降低創造性，提高一致性
+    maxTokens: 1000,                   // 保持較短的回答
+    presencePenalty: 0.5,             // 鼓勵模型指出問題
+    frequencyPenalty: 0.3,            // 避免重複內容
   });
 
 export const createAnalysisChain = (prompt, openai) => {
