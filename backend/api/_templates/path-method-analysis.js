@@ -13,7 +13,6 @@ Evaluation Criteria:
 - Use nouns, not verbs
 - Use plurals for collections
 - Use lowercase letters
-- Use hyphens (-) to separate words
 - Keep hierarchy with /
 - Use query params for filtering
 - Version prefix if needed: /v1
