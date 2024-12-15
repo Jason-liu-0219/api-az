@@ -15,7 +15,7 @@ Evaluation Criteria:
 - Use lowercase letters
 - Use hyphens (-) to separate words
 - Keep hierarchy with /
-- Resource path: /collection/{id}/sub-collection
+- Resource path: /collection/id/sub-collection
 - Use query params for filtering
 - Version prefix if needed: /v1
 
