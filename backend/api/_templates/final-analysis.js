@@ -2,21 +2,14 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const finalAnalysisTemplate = new PromptTemplate({
   template: `
-API 整體評估，請嚴格按照以下規則進行簡短分析：
-規則：
-1. 必須檢查以下幾個方面：
-   - 路徑設計是否符合 RESTful 規範
-   - HTTP 方法使用是否正確
-   - 參數設計是否合理
-   - 請求/響應格式是否標準
-   - 錯誤處理是否完善
+根據以下分析結果進行總結：
+{analysisContent}
 
-2. 對於每個問題：
-   - 明確指出具體違反了哪個規範
-   - 解釋為什麼這是一個問題
-   - 提供具體的修正建議
+• 主要問題：
+[整合上述分析中提到的主要問題，若無問題則回答「API 設計符合規範」]
 
-分析結果：{analysisContent}
+• 改進建議：
+[若有問題，整合上述分析中的改進建議]
 `,
   inputVariables: ["analysisContent"]
 });
