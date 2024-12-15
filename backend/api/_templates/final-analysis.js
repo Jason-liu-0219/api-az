@@ -1,7 +1,7 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
-export const finalAnalysisTemplate = PromptTemplate.fromTemplate(`
-系統角色：{systemRole}
+export const finalAnalysisTemplate = new PromptTemplate({
+  template: `系統角色：{systemRole}
 
 基於之前的分析，為以下 API 端點提供總結：
 路徑：{path}
@@ -14,5 +14,6 @@ export const finalAnalysisTemplate = PromptTemplate.fromTemplate(`
 3. 需要改進的地方
 4. 具體改進建議
 
-請用中文回答，並保持專業、簡潔的語氣。
-`);
+請用中文回答，並保持專業、簡潔的語氣。`,
+  inputVariables: ["systemRole", "method", "path", "description"]
+});

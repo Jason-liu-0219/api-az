@@ -1,7 +1,7 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
-export const methodAnalysisTemplate = PromptTemplate.fromTemplate(`
-系統角色：{systemRole}
+export const methodAnalysisTemplate = new PromptTemplate({
+  template: `系統角色：{systemRole}
 
 方法指南：
 {methodGuidelines}
@@ -17,5 +17,6 @@ export const methodAnalysisTemplate = PromptTemplate.fromTemplate(`
 3. 此方法的安全性和冪等性如何？
 4. 有什麼可以改進的建議嗎？
 
-請用中文回答，並保持專業、簡潔的語氣。
-`);
+請用中文回答，並保持專業、簡潔的語氣。`,
+  inputVariables: ["systemRole", "methodGuidelines", "method", "path", "description"]
+});
