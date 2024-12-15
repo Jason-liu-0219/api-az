@@ -2,16 +2,30 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const responseAnalysisTemplate = new PromptTemplate({
   template: `
-分析{responses}：
+響應分析：
 描述：{description}
 
-請依照標準 OpenAPI 規範分析響應設計，包含：
-- 狀態碼使用是否恰當
-- 響應結構是否符合規範
-- 錯誤處理是否完善
+請依照標準 OpenAPI 規範分析響應設計：
 
-[若發現任何問題，直接列出問題點，否則回答「無問題」]
+1. 狀態碼評估
+- 成功響應碼是否恰當
+- 錯誤響應碼是否完整
+- 是否覆蓋主要場景
 
-[若有問題，提供具體改進建議]`,
+2. 響應結構評估
+- 數據結構是否合理
+- 字段命名是否規範
+- 類型定義是否準確
+
+3. 錯誤處理評估
+- 錯誤信息是否清晰
+- 是否包含必要詳情
+- 是否便於排查問題
+
+[分析結果]
+{問題點列表，若無問題則回答「無問題」}
+
+[改進建議]
+{若有問題，列出具體改進建議}`,
   inputVariables: ["responses", "description"]
 });
