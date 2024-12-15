@@ -33,6 +33,7 @@ export const createOpenAIInstance = (apiKey, modelType = 'gpt-3.5') => {
   return new OpenAI(modelConfig[modelType] || modelConfig['gpt-3.5']);
 };
 
+
 export const createAnalysisChain = (prompt, openai) => {
   return RunnableSequence.from([
     async (input) => {
