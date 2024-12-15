@@ -1,14 +1,13 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
 export const requestBodyAnalysisTemplate = new PromptTemplate({
-  template: `
-API Expert Analysis - Request Body:
+  template: `Analyze the following request body based on these criteria:
 
 Info:
 Body: {requestBody}
 Desc: {description}
 
-Criteria:
+Evaluation Criteria:
 1. Structure
 - Clear hierarchy
 - No deep nesting (max 3)
@@ -27,11 +26,12 @@ Criteria:
 - Default values
 - Required marks
 
+Based on the above criteria, provide ONLY these sections in your response:
+
 Issues:
 [List issues, one per line; or "None"]
 
 Suggest:
-[List suggestions, one per line; or "None"]
-`,
+[List suggestions, one per line; or "None"]`,
   inputVariables: ["requestBody", "description"]
 });

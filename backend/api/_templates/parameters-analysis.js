@@ -1,15 +1,13 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
-
 export const parametersAnalysisTemplate = new PromptTemplate({
-  template: `
-API Expert Analysis - Parameters:
+  template: `Analyze the following parameters based on these criteria:
 
 Info:
-Params: {parameters}
+Parameters: {parameters}
 Desc: {description}
 
-Criteria:
+Evaluation Criteria:
 1. Naming Rules
 - Use camelCase
 - Be descriptive
@@ -28,11 +26,12 @@ Criteria:
 - Value constraints
 - Format validation
 
+Based on the above criteria, provide ONLY these sections in your response:
+
 Issues:
 [List issues, one per line; or "None"]
 
 Suggest:
-[List suggestions, one per line; or "None"]
-`,
+[List suggestions, one per line; or "None"]`,
   inputVariables: ["parameters", "description"]
 });

@@ -1,14 +1,13 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
 export const responseAnalysisTemplate = new PromptTemplate({
-  template: `
-API Expert Analysis - Response:
+  template: `Analyze the following response based on these criteria:
 
 Info:
-Response: {responses}
+Responses: {responses}
 Desc: {description}
 
-Criteria:
+Evaluation Criteria:
 1. Status Code Rules
 - 200: Success
 - 201: Created
@@ -29,11 +28,12 @@ Criteria:
 - Helpful messages
 - Sufficient details
 
+Based on the above criteria, provide ONLY these sections in your response:
+
 Issues:
 [List issues, one per line; or "None"]
 
 Suggest:
-[List suggestions, one per line; or "None"]
-`,
+[List suggestions, one per line; or "None"]`,
   inputVariables: ["responses", "description"]
 });

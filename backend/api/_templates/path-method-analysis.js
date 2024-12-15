@@ -1,15 +1,14 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
 export const pathMethodAnalysisTemplate = new PromptTemplate({
-  template: `
-API Expert Analysis - Path & Method:
+  template: `Analyze the following path and method based on these criteria:
 
 Info:
 Path: {path}
 Method: {method}
 Desc: {description}
 
-Criteria:
+Evaluation Criteria:
 1. RESTful Path Rules
 - Use nouns for resources
 - Use plurals for collections
@@ -24,11 +23,12 @@ Criteria:
 - PATCH: Partial update
 - DELETE: Remove resource
 
+Based on the above criteria, provide ONLY these sections in your response:
+
 Issues:
 [List issues, one per line; or "None"]
 
 Suggest:
-[List suggestions, one per line; or "None"]
-`,
+[List suggestions, one per line; or "None"]`,
   inputVariables: ["path", "method", "description"]
 });
