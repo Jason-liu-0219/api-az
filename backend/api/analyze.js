@@ -17,10 +17,10 @@ const analyzeHandler = async (req, res) => {
     }
 
     try {
-      // 使用請求中的 API key 創建實例
+      // Create OpenAI instance with API key from request
       const openai = createOpenAIInstance(apiKey);
 
-      // 重新創建分析鏈
+      // Recreate analysis chains
       const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, openai);
       const parametersChain = createAnalysisChain(parametersAnalysisTemplate, openai);
       const responseChain = createAnalysisChain(responseAnalysisTemplate, openai);
@@ -30,14 +30,14 @@ const analyzeHandler = async (req, res) => {
       const {
         method,
         path,
-        summary = "無摘要",
-        description = "無描述",
+        summary = "No summary",
+        description = "No description",
         parameters,
         requestBody,
         responses,
       } = apiData;
 
-      // 創建分析任務對象
+      // Create analysis task object
       const analysisPromises = {};
 
       if (method && path) {
@@ -78,25 +78,25 @@ const analyzeHandler = async (req, res) => {
         });
       }
 
-      // 並行執行所有分析
+      // Execute all analyses in parallel
       const analysisResults = await Promise.all(Object.entries(analysisPromises).map(async ([key, promise]) => {
         try {
           const result = await promise;
           return [key, result];
         } catch (error) {
           console.error(`Error in ${key} analysis:`, error);
-          return [key, `分析時發生錯誤: ${error.message}`];
+          return [key, `Error during analysis: ${error.message}`];
         }
       }));
 
-      // 將結果轉換為物件
+      // Convert results to object
       const analysisObject = Object.fromEntries(analysisResults);
 
-      // 最終分析
+      // Final analysis
       const finalAnalysis = await finalAnalysisChain.invoke({
         data: {
           analysisContent: Object.entries(analysisObject)
-            .map(([key, value]) => `${key}分析結果：\n${value}`)
+            .map(([key, value]) => `${key} Analysis Results:\n${value}`)
             .join('\n\n')
         }
       });
