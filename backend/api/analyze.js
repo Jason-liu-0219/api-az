@@ -1,6 +1,5 @@
 import { createOpenAIInstance, createAnalysisChain } from './_utils/openai.js';
-import { methodAnalysisTemplate } from './_templates/method-analysis.js';
-import { pathAnalysisTemplate } from './_templates/path-analysis.js';
+import { pathMethodAnalysisTemplate } from './_templates/path-method-analysis.js';
 import { parametersAnalysisTemplate } from './_templates/parameters-analysis.js';
 import { responseAnalysisTemplate } from './_templates/response-analysis.js';
 import { requestBodyAnalysisTemplate } from './_templates/request-body-analysis.js';
@@ -22,8 +21,7 @@ const analyzeHandler = async (req, res) => {
       const openai = createOpenAIInstance(apiKey);
 
       // 重新創建分析鏈
-      const methodChain = createAnalysisChain(methodAnalysisTemplate, openai);
-      const pathChain = createAnalysisChain(pathAnalysisTemplate, openai);
+      const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, openai);
       const parametersChain = createAnalysisChain(parametersAnalysisTemplate, openai);
       const responseChain = createAnalysisChain(responseAnalysisTemplate, openai);
       const requestBodyChain = createAnalysisChain(requestBodyAnalysisTemplate, openai);
@@ -42,19 +40,8 @@ const analyzeHandler = async (req, res) => {
       // 創建分析任務對象
       const analysisPromises = {};
 
-      if (method) {
-        analysisPromises.method = methodChain.invoke({
-          data: {
-            method,
-            path,
-            description,
-            summary,
-          },
-        });
-      }
-
-      if (path) {
-        analysisPromises.path = pathChain.invoke({
+      if (method && path) {
+        analysisPromises.pathMethod = pathMethodChain.invoke({
           data: {
             path,
             method,
@@ -142,8 +129,7 @@ const analyzeHandler = async (req, res) => {
         success: true,
         analysis: {
           sections: {
-            method: formatAnalysisResult(analysisResults.method),
-            path: formatAnalysisResult(analysisResults.path),
+            pathMethod: formatAnalysisResult(analysisResults.pathMethod),
             parameters: formatAnalysisResult(analysisResults.parameters),
             responses: formatAnalysisResult(analysisResults.responses),
             requestBody: formatAnalysisResult(analysisResults.requestBody),
