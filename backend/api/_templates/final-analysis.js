@@ -1,12 +1,10 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
 export const finalAnalysisTemplate = new PromptTemplate({
-  template: `{analysisContent}
+  template: `Based on the previous analysis results:
+{analysisContent}
 
-Evaluate based on:
-- RESTful design
-- Naming consistency
-- Documentation clarity
+Summarize into:
 
 Issues:
 [List issues, one per line; or "None"]
