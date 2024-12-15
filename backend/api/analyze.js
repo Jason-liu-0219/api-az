@@ -44,7 +44,6 @@ const analyzeHandler = async (req, res) => {
 
       if (method) {
         analysisPromises.method = methodChain.invoke({
-          query: method,
           data: {
             method,
             path,
@@ -56,7 +55,6 @@ const analyzeHandler = async (req, res) => {
 
       if (path) {
         analysisPromises.path = pathChain.invoke({
-          query: path,
           data: {
             path,
             method,
@@ -68,7 +66,6 @@ const analyzeHandler = async (req, res) => {
 
       if (parameters) {
         analysisPromises.parameters = parametersChain.invoke({
-          query: JSON.stringify(parameters),
           data: {
             parameters,
             method,
@@ -81,7 +78,6 @@ const analyzeHandler = async (req, res) => {
 
       if (responses) {
         analysisPromises.responses = responseChain.invoke({
-          query: JSON.stringify(responses),
           data: {
             responses,
             method,
@@ -94,7 +90,6 @@ const analyzeHandler = async (req, res) => {
 
       if (requestBody) {
         analysisPromises.requestBody = requestBodyChain.invoke({
-          query: JSON.stringify(requestBody),
           data: {
             requestBody,
             method,
@@ -132,9 +127,13 @@ const analyzeHandler = async (req, res) => {
       if (Object.keys(analysisResults).length > 0) {
         try {
           finalAnalysis = await finalAnalysisChain.invoke({
-            description,
-            summary,
-            analysisContent,
+            data: {
+              method,
+              path,
+              description,
+              summary,
+              analysisContent,
+            }
           });
         } catch (error) {
           console.error("Final analysis error:", error);

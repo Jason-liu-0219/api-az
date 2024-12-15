@@ -99,10 +99,7 @@ app.post("/analyze", async (req, res) => {
       const parametersChain = createAnalysisChain(parametersAnalysisPrompt, openai);
       const responseChain = createAnalysisChain(responseAnalysisPrompt, openai);
       const requestBodyChain = createAnalysisChain(requestBodyAnalysisPrompt, openai);
-      const finalAnalysisChain = RunnableSequence.from([
-        finalAnalysisPrompt,
-        openai,
-      ]);
+      const finalAnalysisChain = createAnalysisChain(finalAnalysisPrompt, openai);
 
       const {
         method,
@@ -255,6 +252,8 @@ app.post("/analyze", async (req, res) => {
       let finalAnalysis = null;
       if (Object.keys(analysisResults).length > 0) {
         finalAnalysis = await finalAnalysisChain.invoke({
+          method,
+          path,
           description,
           summary,
           analysisContent: analysisContent.join("\n\n"),
