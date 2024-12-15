@@ -17,12 +17,21 @@ dotenv.config();
 const app = express();
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-frontend-url.vercel.app'] 
+    ? ['https://api-az-frontend.vercel.app'] 
     : ['http://localhost:5173'],
   methods: ['GET', 'POST'],
   credentials: true
 }));
 app.use(express.json());
+
+// 健康檢查端點
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 // OpenAI 配置
 const createOpenAIInstance = (apiKey) =>
