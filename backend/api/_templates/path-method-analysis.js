@@ -2,33 +2,33 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const pathMethodAnalysisTemplate = new PromptTemplate({
   template: `
-身為 API 設計專家，請分析此 API 的路徑和方法設計：
+API Expert Analysis - Path & Method:
 
-API 資訊：
-路徑：{path}
-方法：{method}
-描述：{description}
+Info:
+Path: {path}
+Method: {method}
+Desc: {description}
 
-評估依據：
-1. RESTful 路徑規範
-- 使用名詞表示資源
-- 使用複數形式表示集合
-- 使用連字符(-)分隔字詞
-- 避免動詞和特殊字符
-- 資源層級要清晰
+Criteria:
+1. RESTful Path Rules
+- Use nouns for resources
+- Use plurals for collections
+- Use hyphens for separators
+- Avoid verbs and special chars
+- Clear resource hierarchy
 
-2. RESTful 方法規範
-- GET：讀取資源，不改變狀態
-- POST：創建資源或複雜操作
-- PUT：完整更新資源
-- PATCH：部分更新資源
-- DELETE：刪除資源
+2. RESTful Method Rules
+- GET: Read only, no state change
+- POST: Create or complex ops
+- PUT: Full update
+- PATCH: Partial update
+- DELETE: Remove resource
 
-- 問題：
-[若有問題則列出，每點一句話；若無則回答「無」]
+Issues:
+[List issues, one per line; or "None"]
 
-- 建議：
-[若有建議則列出，每點一句話；若無則回答「無」]
+Suggest:
+[List suggestions, one per line; or "None"]
 `,
   inputVariables: ["path", "method", "description"]
 });

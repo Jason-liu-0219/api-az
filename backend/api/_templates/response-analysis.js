@@ -2,38 +2,38 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const responseAnalysisTemplate = new PromptTemplate({
   template: `
-身為 API 設計專家，請分析此響應設計：
+API Expert Analysis - Response:
 
-API 資訊：
-響應內容：{responses}
-描述：{description}
+Info:
+Response: {responses}
+Desc: {description}
 
-評估依據：
-1. 狀態碼規範
-- 200：成功獲取資源
-- 201：成功創建資源
-- 400：請求錯誤
-- 401：未授權
-- 403：禁止訪問
-- 404：資源未找到
-- 500：服務器錯誤
+Criteria:
+1. Status Code Rules
+- 200: Success
+- 201: Created
+- 400: Bad Request
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not Found
+- 500: Server Error
 
-2. 響應結構規範
-- 統一的響應格式
-- 合理的數據結構
-- 規範的字段命名
-- 準確的類型定義
+2. Structure Rules
+- Consistent format
+- Logical structure
+- Standard naming
+- Accurate types
 
-3. 錯誤處理規範
-- 明確的錯誤碼
-- 清晰的錯誤訊息
-- 足夠的錯誤詳情
+3. Error Rules
+- Clear error codes
+- Helpful messages
+- Sufficient details
 
-- 問題：
-[若有問題則列出，每點一句話；若無則回答「無」]
+Issues:
+[List issues, one per line; or "None"]
 
-- 建議：
-[若有建議則列出，每點一句話；若無則回答「無」]
+Suggest:
+[List suggestions, one per line; or "None"]
 `,
   inputVariables: ["responses", "description"]
 });

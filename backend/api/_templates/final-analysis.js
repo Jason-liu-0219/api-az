@@ -2,38 +2,38 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const finalAnalysisTemplate = new PromptTemplate({
   template: `
-身為 API 設計專家，請根據以下分析結果提供整體評估：
+API Expert Analysis - Final Review:
 
-分析內容：
+Analysis Results:
 {analysisContent}
 
-評估依據：
-1. RESTful 規範
-- 資源導向的設計
-- 正確的 HTTP 方法使用
-- 統一的介面規範
-- 無狀態交互
+Criteria:
+1. RESTful Standards
+- Resource-oriented design
+- Proper HTTP methods
+- Uniform interface
+- Stateless interaction
 
-2. 一致性規範
-- 統一的命名風格
-- 一致的數據結構
-- 標準的錯誤處理
-- 完整的狀態碼
+2. Consistency Standards
+- Unified naming
+- Consistent structure
+- Standard error handling
+- Complete status codes
 
-3. 可用性規範
-- 清晰的文檔說明
-- 完整的參數描述
-- 合理的驗證規則
-- 實用的範例
+3. Usability Standards
+- Clear documentation
+- Complete params
+- Valid rules
+- Useful examples
 
-- 優點：
-[列出主要優點，每點一句話；若無則回答「無」]
+Pros:
+[List strengths, one per line; or "None"]
 
-- 問題：
-[列出主要問題，每點一句話；若無則回答「無」]
+Issues:
+[List issues, one per line; or "None"]
 
-- 建議：
-[列出改進建議，每點一句話；若無則回答「無」]
+Suggest:
+[List suggestions, one per line; or "None"]
 `,
   inputVariables: ["analysisContent"]
 });
