@@ -6,10 +6,10 @@ export const createOpenAIInstance = (apiKey) =>
   new OpenAI({
     openAIApiKey: apiKey,
     modelName: "gpt-4-0125-preview",  // Use fastest model
-    temperature: 0,                    // Zero temperature for most consistent and fastest responses
-    maxTokens: 250,                   // Reduced token limit for faster responses
-    presencePenalty: 0,               // Remove penalties for faster processing
-    frequencyPenalty: 0,              // Remove penalties for faster processing
+    temperature: 0.1,                    // Zero temperature for most consistent and fastest responses
+    maxTokens: 500,                   // Reduced token limit for faster responses
+    presencePenalty: 0.1,               // Remove penalties for faster processing
+    frequencyPenalty: 0.1,              // Remove penalties for faster processing
     topP: 0.1,                        // More focused sampling for faster responses
     timeout: 15000,                   // 15 second timeout
   });
