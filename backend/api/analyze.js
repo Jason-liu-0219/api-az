@@ -5,49 +5,21 @@ import { parametersAnalysisTemplate } from './_templates/parameters-analysis.js'
 import { responseAnalysisTemplate } from './_templates/response-analysis.js';
 import { requestBodyAnalysisTemplate } from './_templates/request-body-analysis.js';
 import { finalAnalysisTemplate } from './_templates/final-analysis.js';
-import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
+import { allowCors } from './_middleware/cors.js';
 
-// Prompt 模板定義
-const methodAnalysisPrompt = PromptTemplate.fromTemplate(methodAnalysisTemplate);
-const pathAnalysisPrompt = PromptTemplate.fromTemplate(pathAnalysisTemplate);
-const parametersAnalysisPrompt = PromptTemplate.fromTemplate(parametersAnalysisTemplate);
-const responseAnalysisPrompt = PromptTemplate.fromTemplate(responseAnalysisTemplate);
-const requestBodyAnalysisPrompt = PromptTemplate.fromTemplate(requestBodyAnalysisTemplate);
-const finalAnalysisPrompt = PromptTemplate.fromTemplate(finalAnalysisTemplate);
-
-// 格式化分析結果
-const formatAnalysisResult = (result) => {
-  if (!result) return null;
-  if (typeof result === "string") return result;
-  return result.content || result;
-};
-
-export default async function handler(req, res) {
+const analyzeHandler = async (req, res) => {
   const origin = req.headers.origin;
   const allowedOrigins = [
     'https://api-az-frontend.vercel.app',
     'http://localhost:5173'
   ];
 
-  // Set CORS headers
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version'
-  );
-
   // 處理 OPTIONS 請求
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // 只允許 POST 請求
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -66,13 +38,13 @@ export default async function handler(req, res) {
       const openai = createOpenAIInstance(apiKey);
 
       // 重新創建分析鏈
-      const methodChain = createAnalysisChain(methodAnalysisPrompt, openai);
-      const pathChain = createAnalysisChain(pathAnalysisPrompt, openai);
-      const parametersChain = createAnalysisChain(parametersAnalysisPrompt, openai);
-      const responseChain = createAnalysisChain(responseAnalysisPrompt, openai);
-      const requestBodyChain = createAnalysisChain(requestBodyAnalysisPrompt, openai);
+      const methodChain = createAnalysisChain(methodAnalysisTemplate, openai);
+      const pathChain = createAnalysisChain(pathAnalysisTemplate, openai);
+      const parametersChain = createAnalysisChain(parametersAnalysisTemplate, openai);
+      const responseChain = createAnalysisChain(responseAnalysisTemplate, openai);
+      const requestBodyChain = createAnalysisChain(requestBodyAnalysisTemplate, openai);
       const finalAnalysisChain = RunnableSequence.from([
-        finalAnalysisPrompt,
+        finalAnalysisTemplate,
         openai,
       ]);
 
@@ -263,4 +235,12 @@ export default async function handler(req, res) {
       error: "Internal server error",
     });
   }
-}
+};
+
+const formatAnalysisResult = (result) => {
+  if (!result) return null;
+  if (typeof result === "string") return result;
+  return result.content || result;
+};
+
+export default allowCors(analyzeHandler);
