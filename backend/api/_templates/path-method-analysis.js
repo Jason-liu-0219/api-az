@@ -2,19 +2,16 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const pathMethodAnalysisTemplate = new PromptTemplate({
   template: `
-路徑：{path}
-方法：{method}
+分析{path}和{method}：
 描述：{description}
 
-檢查項目：
-1. 路徑是否使用名詞且格式正確
-2. HTTP 方法是否符合操作類型
+請依照標準 OpenAPI 規範分析路徑和方法設計，包含：
+- 路徑是否使用正確的命名規則
+- HTTP 方法是否符合 RESTful 規範
 
-• 問題：
-[若無問題回答「符合規範」，否則簡述問題]
+[若發現任何問題，直接列出問題點，否則回答「無問題」]
 
-• 建議：
-[若有問題才提供建議]
+[若有問題，提供具體改進建議]
 `,
   inputVariables: ["path", "method", "description"]
 });
