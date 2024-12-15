@@ -45,11 +45,11 @@ const handleAnalyze = async (api) => {
     const result = await emit('analyze', api)
 
     if (result && result[0] && result[0].success && result[0].analysis) {
-      // 處理分析結果中的每個部分
+      // Process each section of the analysis result
       const sections = result[0].analysis.sections
       for (const key in sections) {
         if (sections[key]) {
-          // 將字符串轉換為結構化數據
+          // Convert string to structured data
           try {
             const content = sections[key]
             const lines = content.split('\n')
@@ -59,24 +59,24 @@ const handleAnalyze = async (api) => {
               suggestions: []
             }
 
-            // 解析評分
-            const scoreMatch = content.match(/評分.*?(\d+)/)
+            // Parse score
+            const scoreMatch = content.match(/Score.*?(\d+)/)
             if (scoreMatch) {
               structured.score = parseInt(scoreMatch[1])
             }
 
-            // 解析問題和建議
+            // Parse issues and suggestions
             let currentSection = ''
             lines.forEach(line => {
               line = line.trim()
-              if (line.startsWith('2. 發現問題：')) {
+              if (line.startsWith('2. Issues:')) {
                 currentSection = 'issues'
-              } else if (line.startsWith('3. 具體建議：')) {
+              } else if (line.startsWith('3. Suggestions:')) {
                 currentSection = 'suggestions'
               } else if (line && !line.startsWith('[') && !line.startsWith('#')) {
-                if (currentSection === 'issues' && line !== '無') {
+                if (currentSection === 'issues' && line !== 'None') {
                   structured.issues.push(line)
-                } else if (currentSection === 'suggestions' && line !== '無') {
+                } else if (currentSection === 'suggestions' && line !== 'None') {
                   structured.suggestions.push(line)
                 }
               }

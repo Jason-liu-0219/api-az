@@ -22,9 +22,9 @@
               ? 'bg-green-500 hover:bg-green-600 text-white' 
               : 'bg-gray-300 cursor-not-allowed text-gray-500'
           ]"
-          :title="!apiKey ? '請先輸入 API Key' : '分析此 API'"
+          :title="!apiKey ? 'Please enter API Key first' : 'Analyze this API'"
         >
-          分析
+          Analyze
         </button>
         <ChevronDownIcon v-if="!isOpen" class="h-6 w-6 text-gray-600 transition-transform duration-300" />
         <ChevronUpIcon v-else class="h-6 w-6 text-gray-600 transition-transform duration-300" />

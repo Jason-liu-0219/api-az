@@ -2,18 +2,18 @@
   <div class="space-y-6">
     <!-- Summary Section -->
     <div class="animate-fade-in">
-      <h3 class="font-semibold text-xl mb-2 text-gray-700">摘要</h3>
+      <h3 class="font-semibold text-xl mb-2 text-gray-700">Summary</h3>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-gray-600">{{ api.summary }}</p>
         <p v-if="api.deprecated" class="mt-2 text-red-600 font-semibold">
-          ⚠️ 此 API 已棄用
+          ⚠️ This API is deprecated
         </p>
       </div>
     </div>
 
     <!-- Description Section -->
     <div class="animate-fade-in">
-      <h3 class="font-semibold text-xl mb-2 text-gray-700">描述</h3>
+      <h3 class="font-semibold text-xl mb-2 text-gray-700">Description</h3>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-gray-600 whitespace-pre-line">{{ api.description }}</p>
       </div>
@@ -21,7 +21,7 @@
 
     <!-- Parameters Section -->
     <div class="animate-fade-in">
-      <h3 class="font-semibold text-xl mb-2 text-gray-700">參數</h3>
+      <h3 class="font-semibold text-xl mb-2 text-gray-700">Parameters</h3>
       <div class="bg-gray-50 rounded-lg p-4">
         <ul class="space-y-3">
           <li v-for="param in api.parameters" :key="param.name"
@@ -36,9 +36,9 @@
                 {{ getSchemaType(param.schema) }}
               </span>
               <span v-if="param.required"
-                class="text-xs font-semibold text-red-500 px-2 py-1 bg-red-50 rounded-full">必填</span>
+                class="text-xs font-semibold text-red-500 px-2 py-1 bg-red-50 rounded-full">Required</span>
             </div>
-            <p class="mt-1 text-sm text-gray-600">{{ param.description || '無描述' }}</p>
+            <p class="mt-1 text-sm text-gray-600">{{ param.description || 'No description' }}</p>
           </li>
         </ul>
       </div>
@@ -46,13 +46,13 @@
 
     <!-- Request Body Section -->
     <div class="animate-fade-in" v-if="api.requestBody">
-      <h3 class="font-semibold text-xl mb-2 text-gray-700">請求內容</h3>
+      <h3 class="font-semibold text-xl mb-2 text-gray-700">Request Body</h3>
       <div class="bg-gray-50 rounded-lg p-4">
         <div v-for="(content, contentType) in api.requestBody.content" :key="contentType" class="mb-6 last:mb-0">
           <div class="flex items-center gap-2 mb-2">
             <span class="font-medium text-gray-800">{{ contentType }}</span>
             <span v-if="api.requestBody.required"
-              class="text-xs font-semibold text-red-500 px-2 py-1 bg-red-50 rounded-full">必填</span>
+              class="text-xs font-semibold text-red-500 px-2 py-1 bg-red-50 rounded-full">Required</span>
           </div>
 
           <div class="bg-white rounded-lg p-4 border border-gray-200">
@@ -64,7 +64,7 @@
 
     <!-- Responses Section -->
     <div class="animate-fade-in">
-      <h3 class="font-semibold text-xl mb-2 text-gray-700">響應</h3>
+      <h3 class="font-semibold text-xl mb-2 text-gray-700">Response</h3>
       <div class="space-y-4">
         <div v-for="(response, code) in api.responses" :key="code"
           class="bg-gray-50 rounded-lg p-4 hover:bg-white transition-colors duration-200">
@@ -72,7 +72,7 @@
             <span class="text-lg font-medium" :class="getStatusCodeColor(code)">
               {{ code }}
             </span>
-            <span class="text-sm text-gray-600">{{ response.description || '無描述' }}</span>
+            <span class="text-sm text-gray-600">{{ response.description || 'No description' }}</span>
           </div>
           <div v-if="response.content" class="mt-4 space-y-4">
             <div v-for="(content, type) in response.content" :key="type">

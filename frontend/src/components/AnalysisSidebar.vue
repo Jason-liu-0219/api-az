@@ -9,7 +9,7 @@
       <div class="h-full flex flex-col">
         <!-- Header -->
         <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-lg">
-          <h3 class="text-lg font-semibold text-gray-800">API 分析結果</h3>
+          <h3 class="text-lg font-semibold text-gray-800">API Analysis Results</h3>
           <button @click="$emit('close')" class="text-gray-500 hover:text-gray-700 focus:outline-none">
             <X class="h-5 w-5" />
           </button>
@@ -36,7 +36,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span class="ml-3 text-gray-600">分析中...</span>
+              <span class="ml-3 text-gray-600">Analyzing...</span>
             </div>
 
             <!-- Analysis Content -->
@@ -44,7 +44,7 @@
               <!-- Method Analysis -->
               <div v-if="api.analysis.sections.pathMethod" class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                 <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <h4 class="text-lg font-medium text-gray-800">方法與路徑分析</h4>
+                  <h4 class="text-lg font-medium text-gray-800">Method & Path Analysis</h4>
                 </div>
                 <div class="p-4">
                   <div class="whitespace-pre-wrap text-gray-600">{{ api.analysis.sections.pathMethod }}</div>
@@ -54,7 +54,7 @@
               <!-- Path Analysis -->
               <div v-if="api.analysis.sections.path" class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                 <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <h4 class="text-lg font-medium text-gray-800">路徑分析</h4>
+                  <h4 class="text-lg font-medium text-gray-800">Path Analysis</h4>
                 </div>
                 <div class="p-4">
                   <div class="whitespace-pre-wrap text-gray-600">{{ api.analysis.sections.path }}</div>
@@ -64,7 +64,7 @@
               <!-- Parameters Analysis -->
               <div v-if="api.analysis.sections.parameters" class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                 <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <h4 class="text-lg font-medium text-gray-800">參數分析</h4>
+                  <h4 class="text-lg font-medium text-gray-800">Parameters Analysis</h4>
                 </div>
                 <div class="p-4">
                   <div class="whitespace-pre-wrap text-gray-600">{{ api.analysis.sections.parameters }}</div>
@@ -74,7 +74,7 @@
               <!-- Response Analysis -->
               <div v-if="api.analysis.sections.responses" class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                 <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <h4 class="text-lg font-medium text-gray-800">響應分析</h4>
+                  <h4 class="text-lg font-medium text-gray-800">Response Analysis</h4>
                 </div>
                 <div class="p-4">
                   <div class="whitespace-pre-wrap text-gray-600">{{ api.analysis.sections.responses }}</div>
@@ -84,7 +84,7 @@
               <!-- Request Body Analysis -->
               <div v-if="api.analysis.sections.requestBody" class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                 <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <h4 class="text-lg font-medium text-gray-800">請求體分析</h4>
+                  <h4 class="text-lg font-medium text-gray-800">Request Body Analysis</h4>
                 </div>
                 <div class="p-4">
                   <div class="whitespace-pre-wrap text-gray-600">{{ api.analysis.sections.requestBody }}</div>
@@ -94,7 +94,7 @@
               <!-- Final Analysis -->
               <div v-if="api.analysis.sections.final" class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                 <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <h4 class="text-lg font-medium text-gray-800">整體評估</h4>
+                  <h4 class="text-lg font-medium text-gray-800">Overall Evaluation</h4>
                 </div>
                 <div class="p-4">
                   <div class="whitespace-pre-wrap text-gray-600">{{ api.analysis.sections.final }}</div>
@@ -104,7 +104,7 @@
 
             <!-- Empty State -->
             <div v-else class="text-center py-8 text-gray-500">
-              尚未進行分析
+              No analysis yet
             </div>
           </div>
         </div>

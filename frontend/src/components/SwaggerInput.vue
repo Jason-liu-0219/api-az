@@ -50,28 +50,28 @@ const fileInput = ref(null)
 function resolveSwaggerRefs(schema, components) {
   if (!schema) return schema;
 
-  // 處理對象
+  // Handle objects
   if (typeof schema === 'object') {
-    // 如果有 $ref
+    // If has $ref
     if (schema.$ref) {
       const refPath = schema.$ref.split('/');
-      // 移除 #/components 前綴
+      // Remove #/components prefix
       refPath.splice(0, 2);
-      // 從 components 中獲取實際 schema
+      // Get actual schema from components
       let resolvedSchema = components;
       for (const path of refPath) {
         resolvedSchema = resolvedSchema[path];
       }
-      // 遞歸解析引用的 schema
+      // Recursively resolve referenced schema
       return resolveSwaggerRefs(resolvedSchema, components);
     }
 
-    // 處理數組
+    // Handle arrays
     if (Array.isArray(schema)) {
       return schema.map(item => resolveSwaggerRefs(item, components));
     }
 
-    // 處理對象的所有屬性
+    // Handle all properties of the object
     const resolved = {};
     for (const [key, value] of Object.entries(schema)) {
       resolved[key] = resolveSwaggerRefs(value, components);
