@@ -22,10 +22,9 @@ export const responseAnalysisTemplate = new PromptTemplate({
 - 是否包含必要詳情
 - 是否便於排查問題
 
-[分析結果]
-{問題點列表，若無問題則回答「無問題」}
+[分析結果] 問題點列表，若無問題則回答「無問題」
 
-[改進建議]
-{若有問題，列出具體改進建議}`,
+[改進建議] 若有問題，列出具體改進建議
+`,
   inputVariables: ["responses", "description"]
 });

@@ -18,10 +18,9 @@ export const pathMethodAnalysisTemplate = new PromptTemplate({
 - 是否符合 RESTful 語義
 - 是否適合當前操作
 
-[分析結果]
-{問題點列表，若無問題則回答「無問題」}
+[分析結果] 問題點列表，若無問題則回答「無問題」
 
-[改進建議]
-{若有問題，列出具體改進建議}`,
+[改進建議] 若有問題，列出具體改進建議
+`,
   inputVariables: ["path", "method", "description"]
 });

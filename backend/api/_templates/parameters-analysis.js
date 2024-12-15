@@ -22,10 +22,9 @@ export const parametersAnalysisTemplate = new PromptTemplate({
 - 可選參數是否合理
 - 預設值是否適當
 
-[分析結果]
-{問題點列表，若無問題則回答「無問題」}
+[分析結果] 問題點列表，若無問題則回答「無問題」
 
-[改進建議]
-{若有問題，列出具體改進建議}`,
+[改進建議] 若有問題，列出具體改進建議
+`,
   inputVariables: ["parameters", "description"]
 });
