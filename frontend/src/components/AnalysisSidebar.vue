@@ -42,12 +42,12 @@
             <!-- Analysis Content -->
             <div v-else-if="api?.analysis?.sections" class="space-y-4">
               <!-- Method Analysis -->
-              <div v-if="api.analysis.sections.method" class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+              <div v-if="api.analysis.sections.pathMethod" class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                 <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <h4 class="text-lg font-medium text-gray-800">方法分析</h4>
+                  <h4 class="text-lg font-medium text-gray-800">方法與路徑分析</h4>
                 </div>
                 <div class="p-4">
-                  <div class="whitespace-pre-wrap text-gray-600">{{ api.analysis.sections.method }}</div>
+                  <div class="whitespace-pre-wrap text-gray-600">{{ api.analysis.sections.pathMethod }}</div>
                 </div>
               </div>
 
