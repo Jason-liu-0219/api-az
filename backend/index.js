@@ -37,7 +37,7 @@ app.get('/health', (req, res) => {
 // OpenAI 配置
 const createOpenAIInstance = (apiKey) =>
   new OpenAI({
-    apiKey: apiKey,
+    openAIApiKey: apiKey,
     modelName: "gpt-4-1106-preview", // 使用最新的 GPT-4 模型
     temperature: 0.7, // 適當的創造性
     maxTokens: 2000, // 足夠的輸出長度
@@ -84,7 +84,7 @@ app.post("/analyze", async (req, res) => {
   try {
     const { apiKey, ...apiData } = req.body;
     console.log('Received request body:', { ...apiData, apiKey: '***' }); // 安全地記錄請求
-
+    console.log('API Key:', apiKey);
     if (!apiKey) {
       return res.status(401).json({ error: "API key is required" });
     }
