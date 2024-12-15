@@ -2,7 +2,9 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const parametersAnalysisTemplate = new PromptTemplate({
   template: `
-  分析此 API 參數設計，請嚴格按照以下規則進行分析：
+分析此 API 參數設計，請嚴格按照以下規則進行分析：
+參數：{parameters}
+描述：{description}
 
 規則：
 1. 參數命名規範：
@@ -20,9 +22,6 @@ export const parametersAnalysisTemplate = new PromptTemplate({
    - 必要參數必須明確標註
    - 可選參數必須有默認值
    - 相互依賴的參數必須說明
-
-參數：{parameters}
-描述：{description}
 
 • 問題：
 [若完全符合以上規則才回答「符合規範」，否則必須列出具體違反哪些規則]

@@ -2,7 +2,10 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const methodAnalysisTemplate = new PromptTemplate({
   template: `
-  分析此 API 的 HTTP 方法使用，請嚴格按照以下規則進行分析：
+分析此 API 的 HTTP 方法使用，請嚴格按照以下規則進行分析：
+方法：{method}
+路徑：{path}
+描述：{description}
 
 規則：
 1. 請仔細檢查 HTTP 方法是否完全符合 RESTful 規範：
@@ -19,10 +22,6 @@ export const methodAnalysisTemplate = new PromptTemplate({
    - 查詢操作必須使用 GET
 
 3. 任何不符合以上規則的使用都應該被標記為問題
-
-方法：{method}
-路徑：{path}
-描述：{description}
 
 • 問題：
 [若完全符合以上規則才回答「符合規範」，否則必須列出具體違反哪些規則]
