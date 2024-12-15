@@ -52,7 +52,7 @@ const requestBodyAnalysisPrompt = PromptTemplate.fromTemplate(requestBodyAnalysi
 const finalAnalysisPrompt = PromptTemplate.fromTemplate(finalAnalysisTemplate);
 
 // 創建分析鏈的輔助函數
-const createAnalysisChain = (prompt) => {
+const createAnalysisChain = (prompt, openai) => {
   return RunnableSequence.from([
     async (input) => {
       const {
@@ -62,8 +62,7 @@ const createAnalysisChain = (prompt) => {
         requestBody,
         responses,
         description = "無描述",
-        apiKey,
-      } = input.data;
+      } = input;
 
       return {
         method: method?.toUpperCase(),
@@ -74,11 +73,10 @@ const createAnalysisChain = (prompt) => {
         description,
         systemRole: apiPrompts.role,
         methodGuidelines: apiPrompts.methodGuidelines,
-        apiKey,
       };
     },
     prompt,
-    (input) => createOpenAIInstance(input.apiKey),
+    openai,
   ]);
 };
 
@@ -91,198 +89,201 @@ app.post("/analyze", async (req, res) => {
       return res.status(401).json({ error: "API key is required" });
     }
 
-    // 使用請求中的 API key 創建實例
-    const openai = createOpenAIInstance(apiKey);
+    try {
+      // 使用請求中的 API key 創建實例
+      const openai = createOpenAIInstance(apiKey);
 
-    // 重新創建分析鏈
-    const methodChain = createAnalysisChain(methodAnalysisPrompt);
-    const pathChain = createAnalysisChain(pathAnalysisPrompt);
-    const parametersChain = createAnalysisChain(parametersAnalysisPrompt);
-    const responseChain = createAnalysisChain(responseAnalysisPrompt);
-    const requestBodyChain = createAnalysisChain(requestBodyAnalysisPrompt);
-    const finalAnalysisChain = RunnableSequence.from([
-      finalAnalysisPrompt,
-      openai,
-    ]);
+      // 重新創建分析鏈
+      const methodChain = createAnalysisChain(methodAnalysisPrompt, openai);
+      const pathChain = createAnalysisChain(pathAnalysisPrompt, openai);
+      const parametersChain = createAnalysisChain(parametersAnalysisPrompt, openai);
+      const responseChain = createAnalysisChain(responseAnalysisPrompt, openai);
+      const requestBodyChain = createAnalysisChain(requestBodyAnalysisPrompt, openai);
+      const finalAnalysisChain = RunnableSequence.from([
+        finalAnalysisPrompt,
+        openai,
+      ]);
 
-    const {
-      method,
-      path,
-      summary = "無摘要",
-      description = "無描述",
-      parameters,
-      requestBody,
-      responses,
-    } = apiData;
+      const {
+        method,
+        path,
+        summary = "無摘要",
+        description = "無描述",
+        parameters,
+        requestBody,
+        responses,
+      } = apiData;
 
-    // 創建分析任務數組，只包含存在的字段
-    const analysisPromises = [];
-    const analysisResults = {};
+      // 創建分析任務數組，只包含存在的字段
+      const analysisPromises = [];
+      const analysisResults = {};
 
-    if (method) {
-      analysisPromises.push(
-        methodChain
-          .invoke({
-            query: method,
-            data: {
-              method,
-              path,
-              description,
-              summary,
-              apiKey,
-            },
-          })
-          .then((result) => {
-            console.log("Method analysis result:", result);
-            analysisResults.methodAnalysis = result;
-          })
-          .catch((error) => {
-            analysisResults.methodAnalysis = error.message;
-            console.error("Method analysis error:", error);
-          })
-      );
-    }
+      if (method) {
+        analysisPromises.push(
+          methodChain
+            .invoke({
+              query: method,
+              data: {
+                method,
+                path,
+                description,
+                summary,
+              },
+            })
+            .then((result) => {
+              console.log("Method analysis result:", result);
+              analysisResults.methodAnalysis = result;
+            })
+            .catch((error) => {
+              analysisResults.methodAnalysis = error.message;
+              console.error("Method analysis error:", error);
+            })
+        );
+      }
 
-    if (path) {
-      analysisPromises.push(
-        pathChain
-          .invoke({
-            query: path,
-            data: {
-              path,
-              method,
-              description,
-              summary,
-              apiKey,
-            },
-          })
-          .then((result) => {
-            console.log("Path analysis result:", result);
-            analysisResults.pathAnalysis = result;
-          })
-          .catch((error) => {
-            analysisResults.pathAnalysis = error.message;
-            console.error("Path analysis error:", error);
-          })
-      );
-    }
+      if (path) {
+        analysisPromises.push(
+          pathChain
+            .invoke({
+              query: path,
+              data: {
+                path,
+                method,
+                description,
+                summary,
+              },
+            })
+            .then((result) => {
+              console.log("Path analysis result:", result);
+              analysisResults.pathAnalysis = result;
+            })
+            .catch((error) => {
+              analysisResults.pathAnalysis = error.message;
+              console.error("Path analysis error:", error);
+            })
+        );
+      }
 
-    if (parameters) {
-      analysisPromises.push(
-        parametersChain
-          .invoke({
-            query: parameters,
-            data: {
-              parameters: JSON.stringify(parameters),
-              description,
-              summary,
-              apiKey,
-            },
-          })
-          .then((result) => {
-            console.log("Parameters analysis result:", result);
-            analysisResults.parametersAnalysis = result;
-          })
-          .catch((error) => {
-            analysisResults.parametersAnalysis = error.message;
-            console.error("Parameters analysis error:", error);
-          })
-      );
-    }
+      if (parameters) {
+        analysisPromises.push(
+          parametersChain
+            .invoke({
+              query: parameters,
+              data: {
+                parameters: JSON.stringify(parameters),
+                description,
+                summary,
+              },
+            })
+            .then((result) => {
+              console.log("Parameters analysis result:", result);
+              analysisResults.parametersAnalysis = result;
+            })
+            .catch((error) => {
+              analysisResults.parametersAnalysis = error.message;
+              console.error("Parameters analysis error:", error);
+            })
+        );
+      }
 
-    if (responses) {
-      analysisPromises.push(
-        responseChain
-          .invoke({
-            query: responses,
-            data: {
-              responses: JSON.stringify(responses),
-              description,
-              summary,
-              apiKey,
-            },
-          })
-          .then((result) => {
-            console.log("Responses analysis result:", result);
-            analysisResults.responsesAnalysis = result;
-          })
-          .catch((error) => {
-            analysisResults.responsesAnalysis = error.message;
-            console.error("Responses analysis error:", error);
-          })
-      );
-    }
+      if (responses) {
+        analysisPromises.push(
+          responseChain
+            .invoke({
+              query: responses,
+              data: {
+                responses: JSON.stringify(responses),
+                description,
+                summary,
+              },
+            })
+            .then((result) => {
+              console.log("Responses analysis result:", result);
+              analysisResults.responsesAnalysis = result;
+            })
+            .catch((error) => {
+              analysisResults.responsesAnalysis = error.message;
+              console.error("Responses analysis error:", error);
+            })
+        );
+      }
 
-    if (requestBody) {
-      analysisPromises.push(
-        requestBodyChain
-          .invoke({
-            query: requestBody,
-            data: {
-              requestBody: JSON.stringify(requestBody),
-              description,
-              summary,
-              apiKey,
-            },
-          })
-          .then((result) => {
-            console.log("Request body analysis result:", result);
-            analysisResults.requestBodyAnalysis = result;
-          })
-          .catch((error) => {
-            analysisResults.requestBodyAnalysis = error.message;
-            console.error("Request body analysis error:", error);
-          })
-      );
-    }
+      if (requestBody) {
+        analysisPromises.push(
+          requestBodyChain
+            .invoke({
+              query: requestBody,
+              data: {
+                requestBody: JSON.stringify(requestBody),
+                description,
+                summary,
+              },
+            })
+            .then((result) => {
+              console.log("Request body analysis result:", result);
+              analysisResults.requestBodyAnalysis = result;
+            })
+            .catch((error) => {
+              analysisResults.requestBodyAnalysis = error.message;
+              console.error("Request body analysis error:", error);
+            })
+        );
+      }
 
-    // 等待所有分析完成
-    await Promise.all(analysisPromises);
+      // 等待所有分析完成
+      await Promise.all(analysisPromises);
 
-    // 組合分析內容
-    let analysisContent = [];
-    if (analysisResults.methodAnalysis) {
-      analysisContent.push(analysisResults.methodAnalysis);
-    }
-    if (analysisResults.pathAnalysis) {
-      analysisContent.push(analysisResults.pathAnalysis);
-    }
-    if (analysisResults.parametersAnalysis) {
-      analysisContent.push(analysisResults.parametersAnalysis);
-    }
-    if (analysisResults.responsesAnalysis) {
-      analysisContent.push(analysisResults.responsesAnalysis);
-    }
-    if (analysisResults.requestBodyAnalysis) {
-      analysisContent.push(analysisResults.requestBodyAnalysis);
-    }
+      // 組合分析內容
+      let analysisContent = [];
+      if (analysisResults.methodAnalysis) {
+        analysisContent.push(analysisResults.methodAnalysis);
+      }
+      if (analysisResults.pathAnalysis) {
+        analysisContent.push(analysisResults.pathAnalysis);
+      }
+      if (analysisResults.parametersAnalysis) {
+        analysisContent.push(analysisResults.parametersAnalysis);
+      }
+      if (analysisResults.responsesAnalysis) {
+        analysisContent.push(analysisResults.responsesAnalysis);
+      }
+      if (analysisResults.requestBodyAnalysis) {
+        analysisContent.push(analysisResults.requestBodyAnalysis);
+      }
 
-    // 只有在有分析結果時才添加最終總結
-    let finalAnalysis = null;
-    if (Object.keys(analysisResults).length > 0) {
-      finalAnalysis = await finalAnalysisChain.invoke({
-        description,
-        summary,
-        analysisContent: analysisContent.join("\n\n"),
+      // 只有在有分析結果時才添加最終總結
+      let finalAnalysis = null;
+      if (Object.keys(analysisResults).length > 0) {
+        finalAnalysis = await finalAnalysisChain.invoke({
+          description,
+          summary,
+          analysisContent: analysisContent.join("\n\n"),
+        });
+      }
+
+      // 格式化並返回結果
+      res.json({
+        success: true,
+        analysis: {
+          sections: {
+            method: formatAnalysisResult(analysisResults.methodAnalysis),
+            path: formatAnalysisResult(analysisResults.pathAnalysis),
+            parameters: formatAnalysisResult(analysisResults.parametersAnalysis),
+            responses: formatAnalysisResult(analysisResults.responsesAnalysis),
+            requestBody: formatAnalysisResult(
+              analysisResults.requestBodyAnalysis
+            ),
+            final: formatAnalysisResult(finalAnalysis),
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error analyzing API:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
       });
     }
-
-    // 格式化並返回結果
-    res.json({
-      success: true,
-      analysis: {
-        sections: {
-          method: formatAnalysisResult(analysisResults.methodAnalysis),
-          path: formatAnalysisResult(analysisResults.pathAnalysis),
-          parameters: formatAnalysisResult(analysisResults.parametersAnalysis),
-          responses: formatAnalysisResult(analysisResults.responsesAnalysis),
-          requestBody: formatAnalysisResult(
-            analysisResults.requestBodyAnalysis
-          ),
-          final: formatAnalysisResult(finalAnalysis),
-        },
-      },
-    });
   } catch (error) {
     console.error("Error analyzing API:", error);
     res.status(500).json({
