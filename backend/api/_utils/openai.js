@@ -5,8 +5,8 @@ import { apiPrompts } from "../_prompts/api.js";
 export const createOpenAIInstance = (apiKey) =>
   new OpenAI({
     openAIApiKey: apiKey,
-    modelName: "gpt-3.5-turbo",  // 使用更快的模型
-    temperature: 0.3,                  // 降低創造性，提高確定性
+    modelName: "GPT-3.5-turbo",  // 使用更快的模型
+    temperature: 0.5,                  // 降低創造性，提高確定性
     maxTokens: 1000,                   // 減少 token 限制
     cache: true,                       // 啟用快取
   });
