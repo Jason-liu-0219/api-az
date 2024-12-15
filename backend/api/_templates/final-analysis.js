@@ -1,20 +1,17 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
 export const finalAnalysisTemplate = new PromptTemplate({
-  template: `
-Based on the following API analysis:
-{analysisContent}
+  template: `{analysisContent}
 
-Please evaluate the API considering RESTful standards, consistency standards, and usability standards, then provide only these sections:
-
-Pros:
-[List key strengths, one per line]
+Evaluate based on:
+- RESTful design
+- Naming consistency
+- Documentation clarity
 
 Issues:
-[List all issues found, one per line]
+[List issues, one per line; or "None"]
 
 Suggest:
-[List specific improvement suggestions, one per line]
-`,
+[List suggestions, one per line; or "None"]`,
   inputVariables: ["analysisContent"]
 });
