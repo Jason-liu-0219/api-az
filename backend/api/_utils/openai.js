@@ -28,55 +28,7 @@ export const createOpenAIInstance = (apiKey, modelType = 'gpt-3.5') => {
   return new OpenAI(modelConfig[modelType] || modelConfig['gpt-3.5']);
 };
 
-// 評估 API 數據的複雜度
-export const evaluateComplexity = (data) => {
-  let complexityScore = 0;
-  
-  // 檢查請求體的複雜度
-  if (data.requestBody) {
-    const requestBodyStr = JSON.stringify(data.requestBody);
-    complexityScore += (requestBodyStr.match(/{/g) || []).length; // 嵌套層級
-    complexityScore += Math.floor((requestBodyStr.match(/,/g) || []).length / 3); // 每三個屬性算一分
-  }
-
-  // 檢查響應的複雜度
-  if (data.responses) {
-    const responsesStr = JSON.stringify(data.responses);
-    complexityScore += (responsesStr.match(/{/g) || []).length;
-    complexityScore += Math.floor((responsesStr.match(/,/g) || []).length / 3);
-  }
-
-  // 檢查參數的複雜度
-  if (Array.isArray(data.parameters)) {
-    complexityScore += Math.floor(data.parameters.length / 2); // 每兩個參數算一分
-    // 檢查是否有複雜的參數類型
-    complexityScore += data.parameters.filter(p => 
-      p.schema?.type === 'object' || p.schema?.type === 'array'
-    ).length * 2;
-  }
-
-  // 檢查描述的長度
-  if (data.description) {
-    complexityScore += Math.floor(data.description.length / 200); // 每200字符算一分
-  }
-
-  return complexityScore;
-};
-
-// 根據複雜度選擇模型
-export const selectModel = (data, forceModel = null) => {
-  if (forceModel) return forceModel;
-  
-  const complexityScore = evaluateComplexity(data);
-  console.log(`Complexity score: ${complexityScore}`);
-  
-  // 提高複雜度閾值到25
-  return complexityScore > 25 ? 'gpt-4' : 'gpt-3.5';
-};
-
-export const createAnalysisChain = (prompt, data, apiKey) => {
-  const modelType = selectModel(data);
-  const openai = createOpenAIInstance(apiKey, modelType);
+export const createAnalysisChain = (prompt, openai) => {
   return RunnableSequence.from([
     async (input) => {
       const { data } = input;
@@ -105,6 +57,6 @@ export const createAnalysisChain = (prompt, data, apiKey) => {
       };
     },
     prompt,
-    openai,
+    openai
   ]);
 };

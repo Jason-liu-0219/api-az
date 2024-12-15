@@ -17,11 +17,18 @@ const analyzeHandler = async (req, res) => {
     }
 
     try {
-      // 為每個分析任務創建獨立的鏈，讓系統根據數據複雜度動態選擇模型
-      const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, apiData, apiKey);
-      const parametersChain = createAnalysisChain(parametersAnalysisTemplate, apiData, apiKey);
-      const requestBodyChain = createAnalysisChain(requestBodyAnalysisTemplate, apiData, apiKey);
-      const responseChain = createAnalysisChain(responseAnalysisTemplate, apiData, apiKey);
+      // 基礎分析使用 GPT-3.5
+      const gpt35 = createOpenAIInstance(apiKey, 'gpt-3.5');
+      // 複雜分析使用 GPT-4
+      const gpt4 = createOpenAIInstance(apiKey, 'gpt-4');
+
+      // 使用 GPT-3.5 進行基礎分析
+      const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, gpt35);
+      const parametersChain = createAnalysisChain(parametersAnalysisTemplate, gpt35);
+
+      // 使用 GPT-4 進行複雜分析
+      const requestBodyChain = createAnalysisChain(requestBodyAnalysisTemplate, gpt4);
+      const responseChain = createAnalysisChain(responseAnalysisTemplate, gpt4);
 
       // 並行執行所有分析任務
       const [
@@ -36,14 +43,8 @@ const analyzeHandler = async (req, res) => {
         responseChain.invoke({ data: apiData })
       ]);
 
-      // 最終分析總是使用 GPT-4，因為需要綜合所有結果
-      const finalChain = createAnalysisChain(
-        finalAnalysisTemplate, 
-        apiData,
-        apiKey,
-        'gpt-4' // 強制使用 GPT-4 進行最終分析
-      );
-
+      // 使用 GPT-4 進行最終綜合分析
+      const finalChain = createAnalysisChain(finalAnalysisTemplate, gpt4);
       const finalResult = await finalChain.invoke({
         data: {
           ...apiData,
