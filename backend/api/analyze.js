@@ -43,10 +43,7 @@ const analyzeHandler = async (req, res) => {
       const parametersChain = createAnalysisChain(parametersAnalysisTemplate, openai);
       const responseChain = createAnalysisChain(responseAnalysisTemplate, openai);
       const requestBodyChain = createAnalysisChain(requestBodyAnalysisTemplate, openai);
-      const finalAnalysisChain = RunnableSequence.from([
-        finalAnalysisTemplate,
-        openai,
-      ]);
+      const finalAnalysisChain = createAnalysisChain(finalAnalysisTemplate, openai);
 
       const {
         method,
@@ -58,151 +55,101 @@ const analyzeHandler = async (req, res) => {
         responses,
       } = apiData;
 
-      // 創建分析任務數組，只包含存在的字段
-      const analysisPromises = [];
-      const analysisResults = {};
+      // 創建分析任務對象
+      const analysisPromises = {};
 
       if (method) {
-        analysisPromises.push(
-          methodChain
-            .invoke({
-              query: method,
-              data: {
-                method,
-                path,
-                description,
-                summary,
-              },
-            })
-            .then((result) => {
-              console.log("Method analysis result:", result);
-              analysisResults.methodAnalysis = result;
-            })
-            .catch((error) => {
-              analysisResults.methodAnalysis = error.message;
-              console.error("Method analysis error:", error);
-            })
-        );
+        analysisPromises.method = methodChain.invoke({
+          query: method,
+          data: {
+            method,
+            path,
+            description,
+            summary,
+          },
+        });
       }
 
       if (path) {
-        analysisPromises.push(
-          pathChain
-            .invoke({
-              query: path,
-              data: {
-                path,
-                method,
-                description,
-                summary,
-              },
-            })
-            .then((result) => {
-              console.log("Path analysis result:", result);
-              analysisResults.pathAnalysis = result;
-            })
-            .catch((error) => {
-              analysisResults.pathAnalysis = error.message;
-              console.error("Path analysis error:", error);
-            })
-        );
+        analysisPromises.path = pathChain.invoke({
+          query: path,
+          data: {
+            path,
+            method,
+            description,
+            summary,
+          },
+        });
       }
 
       if (parameters) {
-        analysisPromises.push(
-          parametersChain
-            .invoke({
-              query: parameters,
-              data: {
-                parameters: JSON.stringify(parameters),
-                description,
-                summary,
-              },
-            })
-            .then((result) => {
-              console.log("Parameters analysis result:", result);
-              analysisResults.parametersAnalysis = result;
-            })
-            .catch((error) => {
-              analysisResults.parametersAnalysis = error.message;
-              console.error("Parameters analysis error:", error);
-            })
-        );
+        analysisPromises.parameters = parametersChain.invoke({
+          query: parameters,
+          data: {
+            parameters: JSON.stringify(parameters),
+            description,
+            summary,
+          },
+        });
       }
 
       if (responses) {
-        analysisPromises.push(
-          responseChain
-            .invoke({
-              query: responses,
-              data: {
-                responses: JSON.stringify(responses),
-                description,
-                summary,
-              },
-            })
-            .then((result) => {
-              console.log("Responses analysis result:", result);
-              analysisResults.responsesAnalysis = result;
-            })
-            .catch((error) => {
-              analysisResults.responsesAnalysis = error.message;
-              console.error("Responses analysis error:", error);
-            })
-        );
+        analysisPromises.responses = responseChain.invoke({
+          query: responses,
+          data: {
+            responses: JSON.stringify(responses),
+            description,
+            summary,
+          },
+        });
       }
 
       if (requestBody) {
-        analysisPromises.push(
-          requestBodyChain
-            .invoke({
-              query: requestBody,
-              data: {
-                requestBody: JSON.stringify(requestBody),
-                description,
-                summary,
-              },
-            })
-            .then((result) => {
-              console.log("Request body analysis result:", result);
-              analysisResults.requestBodyAnalysis = result;
-            })
-            .catch((error) => {
-              analysisResults.requestBodyAnalysis = error.message;
-              console.error("Request body analysis error:", error);
-            })
-        );
+        analysisPromises.requestBody = requestBodyChain.invoke({
+          query: requestBody,
+          data: {
+            requestBody: JSON.stringify(requestBody),
+            description,
+            summary,
+          },
+        });
       }
 
-      // 等待所有分析完成
-      await Promise.all(analysisPromises);
+      // 等待所有分析完成並處理結果
+      const results = await Promise.all(
+        Object.entries(analysisPromises).map(async ([key, promise]) => {
+          try {
+            const result = await promise;
+            console.log(`${key} analysis result:`, result);
+            return { [key]: result };
+          } catch (error) {
+            console.error(`${key} analysis error:`, error);
+            return { [key]: error.message };
+          }
+        })
+      );
+
+      // 合併所有分析結果
+      const analysisResults = Object.assign({}, ...results);
 
       // 組合分析內容
-      let analysisContent = [];
-      if (analysisResults.methodAnalysis) {
-        analysisContent.push(analysisResults.methodAnalysis);
-      }
-      if (analysisResults.pathAnalysis) {
-        analysisContent.push(analysisResults.pathAnalysis);
-      }
-      if (analysisResults.parametersAnalysis) {
-        analysisContent.push(analysisResults.parametersAnalysis);
-      }
-      if (analysisResults.responsesAnalysis) {
-        analysisContent.push(analysisResults.responsesAnalysis);
-      }
-      if (analysisResults.requestBodyAnalysis) {
-        analysisContent.push(analysisResults.requestBodyAnalysis);
-      }
+      const analysisContent = Object.values(analysisResults)
+        .filter(result => result !== null && result !== undefined)
+        .join("\n\n");
 
       // 只有在有分析結果時才添加最終總結
       let finalAnalysis = null;
       if (Object.keys(analysisResults).length > 0) {
-        finalAnalysis = await finalAnalysisChain.invoke({
-          description,
-          summary,
-          analysisContent: analysisContent.join("\n\n"),
-        });
+        try {
+          finalAnalysis = await finalAnalysisChain.invoke({
+            description,
+            summary,
+            analysisContent,
+          });
+        } catch (error) {
+          console.error("Final analysis error:", error);
+          finalAnalysis = error.message;
+        }
       }
 
       // 格式化並返回結果
@@ -210,13 +157,11 @@ const analyzeHandler = async (req, res) => {
         success: true,
         analysis: {
           sections: {
-            method: formatAnalysisResult(analysisResults.methodAnalysis),
-            path: formatAnalysisResult(analysisResults.pathAnalysis),
-            parameters: formatAnalysisResult(analysisResults.parametersAnalysis),
-            responses: formatAnalysisResult(analysisResults.responsesAnalysis),
-            requestBody: formatAnalysisResult(
-              analysisResults.requestBodyAnalysis
-            ),
+            method: formatAnalysisResult(analysisResults.method),
+            path: formatAnalysisResult(analysisResults.path),
+            parameters: formatAnalysisResult(analysisResults.parameters),
+            responses: formatAnalysisResult(analysisResults.responses),
+            requestBody: formatAnalysisResult(analysisResults.requestBody),
             final: formatAnalysisResult(finalAnalysis),
           },
         },
