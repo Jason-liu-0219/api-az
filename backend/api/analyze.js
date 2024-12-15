@@ -48,12 +48,19 @@ const analyzeHandler = async (req, res) => {
       const finalResult = await finalChain.invoke({
         data: {
           ...apiData,
-          analysisContent:{
-            pathMethodAnalysis: pathMethodResult,
-            parametersAnalysis: parametersResult,
-            requestBodyAnalysis: requestBodyResult,
-            responseAnalysis: responseResult
-          }
+          analysisContent: `
+          Path and Method Analysis:
+          ${pathMethodResult}
+
+          Parameters Analysis:
+          ${parametersResult}
+
+          Request Body Analysis:
+          ${requestBodyResult}
+
+          Response Analysis:
+          ${responseResult}
+        `
         }
       });
 
