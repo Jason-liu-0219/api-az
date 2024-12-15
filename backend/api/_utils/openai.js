@@ -8,7 +8,6 @@ export const createOpenAIInstance = (apiKey) =>
     modelName: "gpt-3.5-turbo",  // 使用更快的模型
     temperature: 0.5,                  // 降低創造性，提高確定性
     maxTokens: 1000,                   // 減少 token 限制
-    cache: true,                       // 啟用快取
   });
 
 export const createAnalysisChain = (prompt, openai) => {
