@@ -13,6 +13,7 @@ export const createOpenAIInstance = (apiKey) =>
 export const createAnalysisChain = (prompt, openai) => {
   return RunnableSequence.from([
     async (input) => {
+      const { query, data } = input;
       const {
         method,
         path,
@@ -20,15 +21,17 @@ export const createAnalysisChain = (prompt, openai) => {
         requestBody,
         responses,
         description = "無描述",
-      } = input;
+        summary = "無摘要"
+      } = data;
 
       return {
         method: method?.toUpperCase(),
         path,
-        parameters,
-        requestBody,
-        responses,
+        parameters: parameters ? JSON.stringify(parameters) : undefined,
+        requestBody: requestBody ? JSON.stringify(requestBody) : undefined,
+        responses: responses ? JSON.stringify(responses) : undefined,
         description,
+        summary,
         systemRole: apiPrompts.role,
         methodGuidelines: apiPrompts.methodGuidelines,
       };

@@ -5,25 +5,9 @@ import { parametersAnalysisTemplate } from './_templates/parameters-analysis.js'
 import { responseAnalysisTemplate } from './_templates/response-analysis.js';
 import { requestBodyAnalysisTemplate } from './_templates/request-body-analysis.js';
 import { finalAnalysisTemplate } from './_templates/final-analysis.js';
-import { RunnableSequence } from "@langchain/core/runnables";
 import { allowCors } from './_middleware/cors.js';
 
 const analyzeHandler = async (req, res) => {
-  const origin = req.headers.origin;
-  const allowedOrigins = [
-    'https://api-az-frontend.vercel.app',
-    'http://localhost:5173'
-  ];
-
-  // 處理 OPTIONS 請求
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
   try {
     const { apiKey, ...apiData } = req.body;
     console.log('Received request body:', { ...apiData, apiKey: '***' });
@@ -84,9 +68,11 @@ const analyzeHandler = async (req, res) => {
 
       if (parameters) {
         analysisPromises.parameters = parametersChain.invoke({
-          query: parameters,
+          query: JSON.stringify(parameters),
           data: {
-            parameters: JSON.stringify(parameters),
+            parameters,
+            method,
+            path,
             description,
             summary,
           },
@@ -95,9 +81,11 @@ const analyzeHandler = async (req, res) => {
 
       if (responses) {
         analysisPromises.responses = responseChain.invoke({
-          query: responses,
+          query: JSON.stringify(responses),
           data: {
-            responses: JSON.stringify(responses),
+            responses,
+            method,
+            path,
             description,
             summary,
           },
@@ -106,9 +94,11 @@ const analyzeHandler = async (req, res) => {
 
       if (requestBody) {
         analysisPromises.requestBody = requestBodyChain.invoke({
-          query: requestBody,
+          query: JSON.stringify(requestBody),
           data: {
-            requestBody: JSON.stringify(requestBody),
+            requestBody,
+            method,
+            path,
             description,
             summary,
           },
