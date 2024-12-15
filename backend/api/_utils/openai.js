@@ -5,12 +5,12 @@ import { apiPrompts } from "../_prompts/api.js";
 export const createOpenAIInstance = (apiKey) =>
   new OpenAI({
     openAIApiKey: apiKey,
-    modelName: "gpt-4-0125-preview",  // Use fastest model
-    temperature: 0.1,                    // Zero temperature for most consistent and fastest responses
-    maxTokens: 500,                   // Reduced token limit for faster responses
-    presencePenalty: 0.1,               // Remove penalties for faster processing
-    frequencyPenalty: 0.1,              // Remove penalties for faster processing
-    topP: 0.1,                        // More focused sampling for faster responses
+    modelName: "gpt-3.5-turbo-0125",  // Much faster than GPT-4, latest version
+    temperature: 0.1,                  // Low temperature for consistent responses
+    maxTokens: 500,                    // Balanced token limit
+    presencePenalty: 0.1,             // Light penalty for variety
+    frequencyPenalty: 0.1,            // Light penalty for repetition
+    topP: 0.1,                        // Focused sampling
     timeout: 15000,                   // 15 second timeout
   });
 
