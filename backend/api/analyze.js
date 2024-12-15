@@ -17,93 +17,40 @@ const analyzeHandler = async (req, res) => {
     }
 
     try {
-      // Create OpenAI instance with API key from request
-      const openai = createOpenAIInstance(apiKey);
+      // 為每個分析任務創建獨立的鏈，讓系統根據數據複雜度動態選擇模型
+      const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, apiData, apiKey);
+      const parametersChain = createAnalysisChain(parametersAnalysisTemplate, apiData, apiKey);
+      const requestBodyChain = createAnalysisChain(requestBodyAnalysisTemplate, apiData, apiKey);
+      const responseChain = createAnalysisChain(responseAnalysisTemplate, apiData, apiKey);
 
-      // Recreate analysis chains
-      const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, openai);
-      const parametersChain = createAnalysisChain(parametersAnalysisTemplate, openai);
-      const responseChain = createAnalysisChain(responseAnalysisTemplate, openai);
-      const requestBodyChain = createAnalysisChain(requestBodyAnalysisTemplate, openai);
-      const finalAnalysisChain = createAnalysisChain(finalAnalysisTemplate, openai);
+      // 並行執行所有分析任務
+      const [
+        pathMethodResult,
+        parametersResult,
+        requestBodyResult,
+        responseResult
+      ] = await Promise.all([
+        pathMethodChain.invoke({ data: apiData }),
+        parametersChain.invoke({ data: apiData }),
+        requestBodyChain.invoke({ data: apiData }),
+        responseChain.invoke({ data: apiData })
+      ]);
 
-      const {
-        method,
-        path,
-        summary = "No summary",
-        description = "No description",
-        parameters,
-        requestBody,
-        responses,
-      } = apiData;
+      // 最終分析總是使用 GPT-4，因為需要綜合所有結果
+      const finalChain = createAnalysisChain(
+        finalAnalysisTemplate, 
+        apiData,
+        apiKey,
+        'gpt-4' // 強制使用 GPT-4 進行最終分析
+      );
 
-      // Create analysis task object with prioritization
-      const analysisPromises = {};
-      
-      // First priority: Path and Method analysis (most important)
-      if (method && path) {
-        analysisPromises.pathMethod = pathMethodChain.invoke({
-          data: {
-            path,
-            method,
-            description,
-            summary,
-          },
-        });
-      }
-
-      // Second priority: Parameters and Request Body (critical for API usage)
-      const secondaryAnalyses = [];
-      
-      if (parameters?.length > 0) {
-        secondaryAnalyses.push(
-          parametersChain.invoke({
-            data: { parameters, description }
-          }).then(result => ['parameters', result])
-        );
-      }
-
-      if (Object.keys(requestBody || {}).length > 0) {
-        secondaryAnalyses.push(
-          requestBodyChain.invoke({
-            data: { requestBody, description }
-          }).then(result => ['requestBody', result])
-        );
-      }
-
-      // Third priority: Response analysis (can be done last)
-      const tertiaryAnalyses = [];
-      
-      if (Object.keys(responses || {}).length > 0) {
-        tertiaryAnalyses.push(
-          responseChain.invoke({
-            data: { responses, description }
-          }).then(result => ['responses', result])
-        );
-      }
-
-      // Execute analyses in priority order
-      const pathMethodResult = method && path ? await analysisPromises.pathMethod : null;
-      const secondaryResults = await Promise.all(secondaryAnalyses);
-      const tertiaryResults = await Promise.all(tertiaryAnalyses);
-
-      // Combine all results
-      const analysisResults = [
-        ...(pathMethodResult ? [['pathMethod', pathMethodResult]] : []),
-        ...secondaryResults,
-        ...tertiaryResults
-      ];
-
-      // Convert results to object
-      const analysisObject = Object.fromEntries(analysisResults);
-
-      // Final analysis with optimized content
-      const finalAnalysis = await finalAnalysisChain.invoke({
+      const finalResult = await finalChain.invoke({
         data: {
-          analysisContent: Object.entries(analysisObject)
-            .map(([key, value]) => `${key} Analysis:\n${value?.trim()}`)
-            .filter(Boolean)
-            .join('\n\n')
+          ...apiData,
+          pathMethodAnalysis: pathMethodResult,
+          parametersAnalysis: parametersResult,
+          requestBodyAnalysis: requestBodyResult,
+          responseAnalysis: responseResult
         }
       });
 
@@ -111,8 +58,11 @@ const analyzeHandler = async (req, res) => {
         success: true,
         analysis: {
           sections: {
-            ...analysisObject,
-            final: finalAnalysis
+            pathMethod: pathMethodResult,
+            parameters: parametersResult,
+            requestBody: requestBodyResult,
+            response: responseResult,
+            final: finalResult
           }
         }
       });
