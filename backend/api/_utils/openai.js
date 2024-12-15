@@ -14,14 +14,19 @@ export const createOpenAIInstance = (apiKey, modelType = 'gpt-3.5') => {
   };
 
   const modelConfig = {
-    'gpt-4': {
+    'gpt-4-turbo': {
       ...baseConfig,
       modelName: "gpt-4-0125-preview",  // Latest GPT-4 Turbo version
       maxTokens: 800,                   // Higher token limit for complex analysis
     },
+    'gpt-4': {
+      ...baseConfig,
+      modelName: "gpt-4",              // Standard GPT-4
+      maxTokens: 600,                  // Medium token limit
+    },
     'gpt-3.5': {
       ...baseConfig,
-      modelName: "gpt-3.5-turbo-0125",  // Latest GPT-3.5 version
+      modelName: "gpt-3.5-turbo-0125", // Latest GPT-3.5 version
     }
   };
 
