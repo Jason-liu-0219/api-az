@@ -1,5 +1,4 @@
 import { createOpenAIInstance, createAnalysisChain } from './_utils/openai.js';
-import { apiPrompts } from '../prompts/api.js';
 import { methodAnalysisTemplate } from '../templates/method-analysis.js';
 import { pathAnalysisTemplate } from '../templates/path-analysis.js';
 import { parametersAnalysisTemplate } from '../templates/parameters-analysis.js';
