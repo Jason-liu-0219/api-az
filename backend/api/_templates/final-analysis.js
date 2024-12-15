@@ -2,38 +2,19 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const finalAnalysisTemplate = new PromptTemplate({
   template: `
-API Expert Analysis - Final Review:
-
-Analysis Results:
+Based on the following API analysis:
 {analysisContent}
 
-Criteria:
-1. RESTful Standards
-- Resource-oriented design
-- Proper HTTP methods
-- Uniform interface
-- Stateless interaction
-
-2. Consistency Standards
-- Unified naming
-- Consistent structure
-- Standard error handling
-- Complete status codes
-
-3. Usability Standards
-- Clear documentation
-- Complete params
-- Valid rules
-- Useful examples
+Please evaluate the API considering RESTful standards, consistency standards, and usability standards, then provide only these sections:
 
 Pros:
-[List strengths, one per line; or "None"]
+[List key strengths, one per line]
 
 Issues:
-[List issues, one per line; or "None"]
+[List all issues found, one per line]
 
 Suggest:
-[List suggestions, one per line; or "None"]
+[List specific improvement suggestions, one per line]
 `,
   inputVariables: ["analysisContent"]
 });
