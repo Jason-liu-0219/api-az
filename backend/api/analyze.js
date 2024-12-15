@@ -16,6 +16,7 @@ const analyzeHandler = async (req, res) => {
       return res.status(401).json({ error: "API key is required" });
     }
 
+    
     try {
       // 基礎分析使用 GPT-3.5
       const gpt35 = createOpenAIInstance(apiKey, 'gpt-3.5');
