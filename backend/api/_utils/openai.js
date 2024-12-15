@@ -6,10 +6,10 @@ export const createOpenAIInstance = (apiKey) =>
   new OpenAI({
     openAIApiKey: apiKey,
     modelName: "gpt-4-0125-preview",  // 使用更快的模型
-    temperature: 0.2,                  // 降低創造性，提高一致性
-    maxTokens: 500,                    // 進一步限制回答長度
-    presencePenalty: 0.3,             // 適度鼓勵模型指出問題
-    frequencyPenalty: 0.2,            // 適度避免重複內容
+    temperature: 0.1,                  // 降低創造性，提高一致性
+    maxTokens: 300,                    // 限制回答長度
+    presencePenalty: 0.2,             // 適度鼓勵模型指出問題
+    frequencyPenalty: 0.1,            // 適度避免重複內容
   });
 
 export const createAnalysisChain = (prompt, openai) => {
