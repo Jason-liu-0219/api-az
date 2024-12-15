@@ -92,7 +92,10 @@ const analyzeHandler = async (req, res) => {
         success: true,
         analysis: {
           sections: {
-            ...analysisResults,
+            pathMethod: analysisResults.pathMethodAnalysis,
+            parameters: analysisResults.parametersAnalysis,
+            requestBody: analysisResults.requestBodyAnalysis,
+            response: analysisResults.responseAnalysis,
             final: finalResult
           }
         }
