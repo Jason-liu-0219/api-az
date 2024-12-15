@@ -24,26 +24,56 @@ const analyzeHandler = async (req, res) => {
       // 最終分析使用 GPT-4 Turbo
       const gpt4turbo = createOpenAIInstance(apiKey, 'gpt-4-turbo');
 
-      // 使用 GPT-3.5 進行基礎分析
-      const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, gpt35);
-      const parametersChain = createAnalysisChain(parametersAnalysisTemplate, gpt35);
+      // 準備執行的分析任務
+      const analysisPromises = [];
+      const analysisResults = {};
 
-      // 使用標準 GPT-4 進行中等複雜度分析
-      const requestBodyChain = createAnalysisChain(requestBodyAnalysisTemplate, gpt4);
-      const responseChain = createAnalysisChain(responseAnalysisTemplate, gpt4);
+      // 路徑和方法分析（必需）
+      if (apiData.path && apiData.method) {
+        const pathMethodChain = createAnalysisChain(pathMethodAnalysisTemplate, gpt35);
+        analysisPromises.push(
+          pathMethodChain.invoke({ data: apiData })
+            .then(result => {
+              analysisResults.pathMethodAnalysis = result;
+            })
+        );
+      }
 
-      // 並行執行所有分析任務
-      const [
-        pathMethodResult,
-        parametersResult,
-        requestBodyResult,
-        responseResult
-      ] = await Promise.all([
-        pathMethodChain.invoke({ data: apiData }),
-        parametersChain.invoke({ data: apiData }),
-        requestBodyChain.invoke({ data: apiData }),
-        responseChain.invoke({ data: apiData })
-      ]);
+      // 參數分析（可選）
+      if (Array.isArray(apiData.parameters) && apiData.parameters.length > 0) {
+        const parametersChain = createAnalysisChain(parametersAnalysisTemplate, gpt35);
+        analysisPromises.push(
+          parametersChain.invoke({ data: apiData })
+            .then(result => {
+              analysisResults.parametersAnalysis = result;
+            })
+        );
+      }
+
+      // 請求體分析（可選）
+      if (apiData.requestBody && Object.keys(apiData.requestBody).length > 0) {
+        const requestBodyChain = createAnalysisChain(requestBodyAnalysisTemplate, gpt4);
+        analysisPromises.push(
+          requestBodyChain.invoke({ data: apiData })
+            .then(result => {
+              analysisResults.requestBodyAnalysis = result;
+            })
+        );
+      }
+
+      // 響應分析（可選）
+      if (apiData.responses && Object.keys(apiData.responses).length > 0) {
+        const responseChain = createAnalysisChain(responseAnalysisTemplate, gpt4);
+        analysisPromises.push(
+          responseChain.invoke({ data: apiData })
+            .then(result => {
+              analysisResults.responseAnalysis = result;
+            })
+        );
+      }
+
+      // 等待所有分析完成
+      await Promise.all(analysisPromises);
 
       // 使用 GPT-4 Turbo 進行最終綜合分析
       const finalChain = createAnalysisChain(finalAnalysisTemplate, gpt4turbo);
@@ -51,29 +81,18 @@ const analyzeHandler = async (req, res) => {
         data: {
           ...apiData,
           analysisContent: `
-          Path and Method Analysis:
-          ${pathMethodResult}
-
-          Parameters Analysis:
-          ${parametersResult}
-
-          Request Body Analysis:
-          ${requestBodyResult}
-
-          Response Analysis:
-          ${responseResult}
-        `
+          ${analysisResults.pathMethodAnalysis ? `Path and Method Analysis:${analysisResults.pathMethodAnalysis}` : ''}
+          ${analysisResults.parametersAnalysis ? `Parameters Analysis:${analysisResults.parametersAnalysis}` : ''}
+          ${analysisResults.requestBodyAnalysis ? `Request Body Analysis:${analysisResults.requestBodyAnalysis}` : ''}
+          ${analysisResults.responseAnalysis ? `Response Analysis:${analysisResults.responseAnalysis}` : ''}`
         }
       });
 
-      res.json({
+      return res.status(200).json({
         success: true,
         analysis: {
           sections: {
-            pathMethod: pathMethodResult,
-            parameters: parametersResult,
-            requestBody: requestBodyResult,
-            response: responseResult,
+            ...analysisResults,
             final: finalResult
           }
         }
