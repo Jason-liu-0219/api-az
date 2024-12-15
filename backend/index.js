@@ -61,7 +61,7 @@ const createAnalysisChain = (prompt, openai) => {
         parameters,
         requestBody,
         responses,
-        description = "無描述",
+        description = "No description",
       } = input;
 
       return {
@@ -104,8 +104,8 @@ app.post("/analyze", async (req, res) => {
       const {
         method,
         path,
-        summary = "無摘要",
-        description = "無描述",
+        summary = "No summary",
+        description = "No description",
         parameters,
         requestBody,
         responses,
