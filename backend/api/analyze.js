@@ -37,9 +37,10 @@ const analyzeHandler = async (req, res) => {
         responses,
       } = apiData;
 
-      // Create analysis task object
+      // Create analysis task object with prioritization
       const analysisPromises = {};
-
+      
+      // First priority: Path and Method analysis (most important)
       if (method && path) {
         analysisPromises.pathMethod = pathMethodChain.invoke({
           data: {
@@ -51,52 +52,57 @@ const analyzeHandler = async (req, res) => {
         });
       }
 
-      if (parameters && Array.isArray(parameters) && parameters.length > 0) {
-        analysisPromises.parameters = parametersChain.invoke({
-          data: {
-            parameters,
-            description,
-          },
-        });
+      // Second priority: Parameters and Request Body (critical for API usage)
+      const secondaryAnalyses = [];
+      
+      if (parameters?.length > 0) {
+        secondaryAnalyses.push(
+          parametersChain.invoke({
+            data: { parameters, description }
+          }).then(result => ['parameters', result])
+        );
       }
 
-      if (requestBody && Object.keys(requestBody).length > 0) {
-        analysisPromises.requestBody = requestBodyChain.invoke({
-          data: {
-            requestBody,
-            description,
-          },
-        });
+      if (Object.keys(requestBody || {}).length > 0) {
+        secondaryAnalyses.push(
+          requestBodyChain.invoke({
+            data: { requestBody, description }
+          }).then(result => ['requestBody', result])
+        );
       }
 
-      if (responses && Object.keys(responses).length > 0) {
-        analysisPromises.responses = responseChain.invoke({
-          data: {
-            responses,
-            description,
-          },
-        });
+      // Third priority: Response analysis (can be done last)
+      const tertiaryAnalyses = [];
+      
+      if (Object.keys(responses || {}).length > 0) {
+        tertiaryAnalyses.push(
+          responseChain.invoke({
+            data: { responses, description }
+          }).then(result => ['responses', result])
+        );
       }
 
-      // Execute all analyses in parallel
-      const analysisResults = await Promise.all(Object.entries(analysisPromises).map(async ([key, promise]) => {
-        try {
-          const result = await promise;
-          return [key, result];
-        } catch (error) {
-          console.error(`Error in ${key} analysis:`, error);
-          return [key, `Error during analysis: ${error.message}`];
-        }
-      }));
+      // Execute analyses in priority order
+      const pathMethodResult = method && path ? await analysisPromises.pathMethod : null;
+      const secondaryResults = await Promise.all(secondaryAnalyses);
+      const tertiaryResults = await Promise.all(tertiaryAnalyses);
+
+      // Combine all results
+      const analysisResults = [
+        ...(pathMethodResult ? [['pathMethod', pathMethodResult]] : []),
+        ...secondaryResults,
+        ...tertiaryResults
+      ];
 
       // Convert results to object
       const analysisObject = Object.fromEntries(analysisResults);
 
-      // Final analysis
+      // Final analysis with optimized content
       const finalAnalysis = await finalAnalysisChain.invoke({
         data: {
           analysisContent: Object.entries(analysisObject)
-            .map(([key, value]) => `${key} Analysis Results:\n${value}`)
+            .map(([key, value]) => `${key} Analysis:\n${value?.trim()}`)
+            .filter(Boolean)
             .join('\n\n')
         }
       });
