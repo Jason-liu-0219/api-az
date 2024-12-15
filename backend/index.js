@@ -38,9 +38,9 @@ app.get('/health', (req, res) => {
 const createOpenAIInstance = (apiKey) =>
   new OpenAI({
     openAIApiKey: apiKey,
-    modelName: "gpt-4-1106-preview", // 使用最新的 GPT-4 模型
-    temperature: 0.7, // 適當的創造性
-    maxTokens: 2000, // 足夠的輸出長度
+    modelName: "GPT-3.5-turbo", 
+    temperature: 0.3, // 適當的創造性
+    maxTokens: 1000, // 足夠的輸出長度
   });
 
 // Prompt 模板定義
