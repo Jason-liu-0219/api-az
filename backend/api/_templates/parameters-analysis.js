@@ -2,29 +2,36 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const parametersAnalysisTemplate = new PromptTemplate({
   template: `
-參數分析：
+身為 API 設計專家，請分析此 API 的參數設計：
+
+API 資訊：
+參數：{parameters}
 描述：{description}
 
-請依照標準 OpenAPI 規範分析參數設計：
+評估依據：
+1. 參數命名規範
+- 使用 camelCase 命名
+- 名稱具描述性，避免縮寫
+- 遵循一致的命名風格
+- 避免特殊字符
 
-1. 參數定義評估
-- 命名規則是否規範
-- 參數位置是否合適
-- 是否包含必要說明
+2. 參數定義規範
+- 明確的數據類型
+- 合理的參數位置（path/query/header）
+- 清晰的參數描述
+- 具體的使用說明
 
-2. 類型定義評估
-- 數據類型是否準確
-- 格式限制是否合理
-- 是否有效驗證
+3. 參數驗證規範
+- 明確的必填標記
+- 合理的預設值
+- 適當的值範圍限制
+- 正確的格式驗證
 
-3. 必要性評估
-- 必要參數標註是否清晰
-- 可選參數是否合理
-- 預設值是否適當
+- 問題：
+[若有問題則列出，每點一句話；若無則回答「無」]
 
-[分析結果] 問題點列表，若無問題則回答「無問題」
-
-[改進建議] 若有問題，列出具體改進建議
+- 建議：
+[若有建議則列出，每點一句話；若無則回答「無」]
 `,
   inputVariables: ["parameters", "description"]
 });

@@ -2,25 +2,33 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const pathMethodAnalysisTemplate = new PromptTemplate({
   template: `
-路徑和方法分析：
+身為 API 設計專家，請分析此 API 的路徑和方法設計：
+
+API 資訊：
 路徑：{path}
 方法：{method}
 描述：{description}
 
-請依照標準 OpenAPI 規範分析路徑和方法設計：
+評估依據：
+1. RESTful 路徑規範
+- 使用名詞表示資源
+- 使用複數形式表示集合
+- 使用連字符(-)分隔字詞
+- 避免動詞和特殊字符
+- 資源層級要清晰
 
-1. 路徑設計評估
-- 命名規則是否符合 RESTful 規範
-- 資源標識是否清晰
-- URL 結構是否合理
+2. RESTful 方法規範
+- GET：讀取資源，不改變狀態
+- POST：創建資源或複雜操作
+- PUT：完整更新資源
+- PATCH：部分更新資源
+- DELETE：刪除資源
 
-2. HTTP 方法評估
-- 是否符合 RESTful 語義
-- 是否適合當前操作
+- 問題：
+[若有問題則列出，每點一句話；若無則回答「無」]
 
-[分析結果] 問題點列表，若無問題則回答「無問題」
-
-[改進建議] 若有問題，列出具體改進建議
+- 建議：
+[若有建議則列出，每點一句話；若無則回答「無」]
 `,
   inputVariables: ["path", "method", "description"]
 });

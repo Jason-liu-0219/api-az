@@ -2,29 +2,36 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const requestBodyAnalysisTemplate = new PromptTemplate({
   template: `
-請求體分析{requestBody}：
+身為 API 設計專家，請分析此 API 的請求體設計：
+
+API 資訊：
+請求體：{requestBody}
 描述：{description}
 
-請依照標準 OpenAPI 規範分析請求體設計：
+評估依據：
+1. 數據結構規範
+- 層次結構合理清晰
+- 避免過度嵌套（不超過3層）
+- 避免不必要的數據冗餘
+- 相關數據正確分組
 
-1. 數據結構評估
-- 結構設計是否合理
-- 層級關係是否清晰
-- 是否避免冗餘
+2. 字段規範
+- 使用 camelCase 命名
+- 名稱具有描述性
+- 避免縮寫和特殊字符
+- 遵循一致的命名風格
 
-2. 字段定義評估
-- 命名是否規範
-- 類型是否準確
-- 格式是否合適
+3. 數據規範
+- 明確的數據類型
+- 合理的格式限制
+- 適當的預設值
+- 清晰的必填標記
 
-3. 必要性評估
-- 必要字段是否完整
-- 可選字段是否合理
-- 預設值是否適當
+- 問題：
+[若有問題則列出，每點一句話；若無則回答「無」]
 
-[分析結果] 問題點列表，若無問題則回答「無問題」
-
-[改進建議] 若有問題，列出具體改進建議
+- 建議：
+[若有建議則列出，每點一句話；若無則回答「無」]
 `,
   inputVariables: ["requestBody", "description"]
 });
