@@ -1,4 +1,6 @@
 import { OpenAI } from "@langchain/openai";
+import { RunnableSequence } from "@langchain/core/runnables";
+import { apiPrompts } from "../../prompts/api.js";
 
 export const createOpenAIInstance = (apiKey) =>
   new OpenAI({

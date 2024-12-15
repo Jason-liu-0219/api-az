@@ -1,11 +1,11 @@
-import { createOpenAIInstance, createAnalysisChain } from '../utils/openai';
-import { apiPrompts } from '../prompts/api';
-import { methodAnalysisTemplate } from '../templates/method-analysis';
-import { pathAnalysisTemplate } from '../templates/path-analysis';
-import { parametersAnalysisTemplate } from '../templates/parameters-analysis';
-import { responseAnalysisTemplate } from '../templates/response-analysis';
-import { requestBodyAnalysisTemplate } from '../templates/request-body-analysis';
-import { finalAnalysisTemplate } from '../templates/final-analysis';
+import { createOpenAIInstance, createAnalysisChain } from './_utils/openai.js';
+import { apiPrompts } from '../prompts/api.js';
+import { methodAnalysisTemplate } from '../templates/method-analysis.js';
+import { pathAnalysisTemplate } from '../templates/path-analysis.js';
+import { parametersAnalysisTemplate } from '../templates/parameters-analysis.js';
+import { responseAnalysisTemplate } from '../templates/response-analysis.js';
+import { requestBodyAnalysisTemplate } from '../templates/request-body-analysis.js';
+import { finalAnalysisTemplate } from '../templates/final-analysis.js';
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 
