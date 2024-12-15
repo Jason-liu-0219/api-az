@@ -78,55 +78,37 @@ const analyzeHandler = async (req, res) => {
         });
       }
 
-      // 等待所有分析完成並處理結果
-      const results = await Promise.all(
-        Object.entries(analysisPromises).map(async ([key, promise]) => {
-          try {
-            const result = await promise;
-            console.log(`${key} analysis result:`, result);
-            return { [key]: result };
-          } catch (error) {
-            console.error(`${key} analysis error:`, error);
-            return { [key]: error.message };
-          }
-        })
-      );
-
-      // 合併所有分析結果
-      const analysisResults = Object.assign({}, ...results);
-
-      // 組合分析內容
-      const analysisContent = Object.values(analysisResults)
-        .filter(result => result !== null && result !== undefined)
-        .join("\n\n");
-
-      // 只有在有分析結果時才添加最終總結
-      let finalAnalysis = null;
-      if (Object.keys(analysisResults).length > 0) {
+      // 並行執行所有分析
+      const analysisResults = await Promise.all(Object.entries(analysisPromises).map(async ([key, promise]) => {
         try {
-          finalAnalysis = await finalAnalysisChain.invoke({
-            data: {
-              analysisContent,
-            }
-          });
+          const result = await promise;
+          return [key, result];
         } catch (error) {
-          console.error("Final analysis error:", error);
-          finalAnalysis = error.message;
+          console.error(`Error in ${key} analysis:`, error);
+          return [key, `分析時發生錯誤: ${error.message}`];
         }
-      }
+      }));
 
-      // 格式化並返回結果
-      res.status(200).json({
+      // 將結果轉換為物件
+      const analysisObject = Object.fromEntries(analysisResults);
+
+      // 最終分析
+      const finalAnalysis = await finalAnalysisChain.invoke({
+        data: {
+          analysisContent: Object.entries(analysisObject)
+            .map(([key, value]) => `${key}分析結果：\n${value}`)
+            .join('\n\n')
+        }
+      });
+
+      res.json({
         success: true,
         analysis: {
           sections: {
-            pathMethod: formatAnalysisResult(analysisResults.pathMethod),
-            parameters: formatAnalysisResult(analysisResults.parameters),
-            responses: formatAnalysisResult(analysisResults.responses),
-            requestBody: formatAnalysisResult(analysisResults.requestBody),
-            final: formatAnalysisResult(finalAnalysis),
-          },
-        },
+            ...analysisObject,
+            final: finalAnalysis
+          }
+        }
       });
     } catch (error) {
       console.error("Error analyzing API:", error);
@@ -142,12 +124,6 @@ const analyzeHandler = async (req, res) => {
       error: "Internal server error",
     });
   }
-};
-
-const formatAnalysisResult = (result) => {
-  if (!result) return null;
-  if (typeof result === "string") return result;
-  return result.content || result;
 };
 
 export default allowCors(analyzeHandler);
