@@ -1,12 +1,12 @@
 import { PromptTemplate } from "@langchain/core/prompts";
 
-export const pathMethodAnalysisTemplate = new PromptTemplate({
-  template: `Analyze the following path and method based on these criteria:
+export const baseAnalysisTemplate = new PromptTemplate({
+  template: `Analyze the API's base structure based on these criteria:
 
 Info:
 Path: {path}
 Method: {method}
-Desc: {description}
+Parameters: {parameters}
 
 Evaluation Criteria:
 1. RESTful Path Rules
@@ -24,6 +24,13 @@ Evaluation Criteria:
 - PATCH: Partial update
 - DELETE: Remove resource
 
+3. Parameter Rules
+- Clear naming
+- Proper location (path/query/header)
+- Required flags
+- Default values
+- Format validation
+
 Based on the above criteria, provide ONLY these sections in your response:
 
 Issues:
@@ -31,5 +38,5 @@ Issues:
 
 Suggest:
 [List suggestions, one per line; or "None"]`,
-  inputVariables: ["path", "method", "description"]
+  inputVariables: ["path", "method", "parameters"]
 });
