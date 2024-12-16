@@ -36,9 +36,6 @@ Evaluation Focus:
 
 Based on the above criteria, provide these sections:
 
-Final Recommendations:
-[List actionable recommendations, one per line]
-
 REFACTORING EXAMPLE:
 [List potential refactorings, one per line]
 `,
