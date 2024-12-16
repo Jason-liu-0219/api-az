@@ -47,5 +47,11 @@ Areas for Improvement:
 
 Final Recommendations:
 [List actionable recommendations, one per line]`,
-  inputVariables: ["data"]
+  inputVariables: [
+    "path",
+    "method",
+    "description",
+    "baseAnalysis",
+    "dataAnalysis",
+  ],
 });
