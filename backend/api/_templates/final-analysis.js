@@ -4,16 +4,16 @@ export const finalAnalysisTemplate = new PromptTemplate({
   template: `Provide a comprehensive analysis of the API based on previous analysis results:
 
 API Info:
-Path: {data.path}
-Method: {data.method}
-Description: {data.description}
+Path: {path}
+Method: {method}
+Description: {description}
 
 Previous Analysis Results:
 1. Base Analysis (Path, Method, Parameters):
-{data.baseAnalysis}
+{baseAnalysis}
 
 2. Data Analysis (Request/Response):
-{data.dataAnalysis}
+{dataAnalysis}
 
 Evaluation Focus:
 1. Overall Design

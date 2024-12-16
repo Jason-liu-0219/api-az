@@ -24,9 +24,11 @@ const analyzeHandler = async (req, res) => {
       if (apiData.path && apiData.method) {
         const baseChain = createAnalysisChain(baseAnalysisTemplate, gpt4);
         analysisResults.baseAnalysis = await baseChain.invoke({
-          path: apiData.path,
-          method: apiData.method,
-          parameters: JSON.stringify(apiData.parameters || [])
+          data:{
+            path: apiData.path,
+            method: apiData.method,
+            parameters: JSON.stringify(apiData.parameters || [])
+          }
         });
       }
 
@@ -35,8 +37,10 @@ const analyzeHandler = async (req, res) => {
           (apiData.responses && Object.keys(apiData.responses).length > 0)) {
         const dataChain = createAnalysisChain(dataAnalysisTemplate, gpt4);
         analysisResults.dataAnalysis = await dataChain.invoke({
-          requestBody: JSON.stringify(apiData.requestBody || {}),
-          responses: JSON.stringify(apiData.responses || {})
+          data:{
+            requestBody: JSON.stringify(apiData.requestBody || {}),
+            responses: JSON.stringify(apiData.responses || {})
+          }
         });
       }
 
