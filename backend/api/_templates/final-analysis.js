@@ -36,17 +36,12 @@ Evaluation Focus:
 
 Based on the above criteria, provide these sections:
 
-Summary:
-[Brief overview of the API design]
-
-Key Strengths:
-[List key positive aspects, one per line]
-
-Areas for Improvement:
-[List suggested improvements, one per line]
-
 Final Recommendations:
-[List actionable recommendations, one per line]`,
+[List actionable recommendations, one per line]
+
+REFACTORING EXAMPLE:
+[List potential refactorings, one per line]
+`,
   inputVariables: [
     "path",
     "method",
