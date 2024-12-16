@@ -2,37 +2,36 @@ import { OpenAI } from "@langchain/openai";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { apiPrompts } from "../_prompts/api.js";
 
-export const createOpenAIInstance = (apiKey, modelType = 'gpt-3.5') => {
+export const createOpenAIInstance = (apiKey, modelType = "gpt-3.5") => {
   const baseConfig = {
     openAIApiKey: apiKey,
-    temperature: 0.1,                  // Low temperature for consistent responses
-    maxTokens: 500,                    // Balanced token limit
-    presencePenalty: 0.1,             // Light penalty for variety
-    frequencyPenalty: 0.1,            // Light penalty for repetition
-    topP: 0.1,                        // Focused sampling
-    timeout: 15000,                   // 15 second timeout
+    temperature: 0.1, // Low temperature for consistent responses
+    maxTokens: 500, // Balanced token limit
+    presencePenalty: 0.1, // Light penalty for variety
+    frequencyPenalty: 0.1, // Light penalty for repetition
+    topP: 0.1, // Focused sampling
+    timeout: 15000, // 15 second timeout
   };
 
   const modelConfig = {
-    'gpt-4-turbo': {
+    "gpt-4-turbo": {
       ...baseConfig,
-      modelName: "gpt-4-0125-preview",  // Latest GPT-4 Turbo version
-      maxTokens: 800,                   // Higher token limit for complex analysis
+      modelName: "gpt-4-0125-preview", // Latest GPT-4 Turbo version
+      maxTokens: 800, // Higher token limit for complex analysis
     },
-    'gpt-4': {
+    "gpt-4": {
       ...baseConfig,
-      modelName: "gpt-4",              // Standard GPT-4
-      maxTokens: 600,                  // Medium token limit
+      modelName: "gpt-4", // Standard GPT-4
+      maxTokens: 600, // Medium token limit
     },
-    'gpt-3.5': {
+    "gpt-3.5": {
       ...baseConfig,
       modelName: "gpt-3.5-turbo-0125", // Latest GPT-3.5 version
-    }
+    },
   };
 
-  return new OpenAI(modelConfig[modelType] || modelConfig['gpt-3.5']);
+  return new OpenAI(modelConfig[modelType] || modelConfig["gpt-3.5"]);
 };
-
 
 export const createAnalysisChain = (prompt, openai) => {
   return RunnableSequence.from([
@@ -47,6 +46,8 @@ export const createAnalysisChain = (prompt, openai) => {
         description = "No description",
         summary = "No summary",
         analysisContent,
+        baseAnalysis,
+        dataAnalysis,
       } = data;
 
       return {
@@ -60,9 +61,11 @@ export const createAnalysisChain = (prompt, openai) => {
         analysisContent,
         systemRole: apiPrompts.role,
         methodGuidelines: apiPrompts.methodGuidelines,
+        baseAnalysis,
+        dataAnalysis,
       };
     },
     prompt,
-    openai
+    openai,
   ]);
 };
